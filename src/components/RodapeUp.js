@@ -1,11 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
-import Home from './src/screens/Home';
 
-export default function App() {
+export default function RodapeUp() {
   return (
     <View style={styles.container}>
-      <Home />
+      <Text style={styles.texto}>Um serviço @UpBusiness</Text>
       <StatusBar style="auto" />
     </View>
   );
@@ -13,9 +12,14 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+    width: '100%',
+    height: 30,
+    textAlign: 'center',
   },
+  texto: {
+    color: '#fff',
+    fontSize: 15
+  }
 });
