@@ -1,7 +1,11 @@
+import { useNavigation } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function CardMesa( { status } ) {
+  // para fazer navegações
+  const navigator = useNavigation();
+  
   return (
     <TouchableOpacity 
       style={
@@ -11,6 +15,9 @@ export default function CardMesa( { status } ) {
           }
         ]
       }
+      onPress={() => {
+        navigator.navigate('ResumoConta')
+      }}
     >
       <Text style={styles.txtMesa}>MESA 01</Text>
     </TouchableOpacity>
