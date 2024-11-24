@@ -1,7 +1,12 @@
 import { StatusBar } from 'expo-status-bar';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+// componentes
 import RodapeUp from '../components/RodapeUp';
 import CardMesa from '../components/CardMesa';
+
+// imports
+import Octicons from '@expo/vector-icons/Octicons';
 
 export default function Home() {
   return (
@@ -12,14 +17,14 @@ export default function Home() {
             <Text style={{color: 'white', fontSize: 30, fontWeight: 'bold'}}>Up! PDV</Text>
             <Text style={{color: 'white', fontSize: 17}}>Bem-vindo ao seu sistema de vendas!</Text>
           </View>
-          <View>
-            <Text style={{color: 'white'}}>***</Text>
-          </View>
+          <TouchableOpacity>
+            <Octicons name="gear" size={27} color="white" />
+          </TouchableOpacity>
         </View>
 
         <View style={styles.containerNovaMesa}>
           <TouchableOpacity style={styles.btnNovaMesa}>
-            <Text style={{textAlign: 'center', fontSize: 20, color: 'white'}}>Nova mesa</Text>
+            <Text style={{textAlign: 'center', fontSize: 20, color: 'white', alignItems: 'center'}}>+ Nova mesa</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -81,7 +86,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#247ba0',
     padding: 10,
     width: '60%',
-    borderRadius: 15
+    borderRadius: 15,
+    display: 'flex',
   },
   content: {
     backgroundColor: '#fff',
