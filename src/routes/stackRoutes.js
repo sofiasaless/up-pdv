@@ -7,6 +7,7 @@ enableScreens();
 // telas
 import Home from "../screens/Home";
 import ResumoConta from '../screens/ResumoConta';
+import ExibirCardapio from '../screens/ExibirCardapio';
 
 export default function AllRoutes() {
   return (
@@ -26,7 +27,19 @@ export default function AllRoutes() {
             backgroundColor: '#1d3461',
           },
           headerTintColor: 'white',
-      }}
+        }}
+      />
+
+      <Stack.Screen
+        name="ExibirCardapio"
+        component={ExibirCardapio}
+        options={{
+          title: 'Resumo da conta - Cardápio',
+          headerStyle: {
+            backgroundColor: '#1d3461',
+          },
+          headerTintColor: 'white',
+        }}
       />
         
     </Stack.Navigator>
