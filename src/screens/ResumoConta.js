@@ -1,88 +1,21 @@
 import { StatusBar } from 'expo-status-bar';
 import { KeyboardAvoidingView, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { FlatList, TextInput } from 'react-native-gesture-handler';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 
 // componentes
 import RodapeUp from '../components/RodapeUp';
 import ItemPedido from '../components/ItemPedido';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { useState } from 'react';
 
-// data temporaria
-const DATA = [
-  {
-    "quantidade": 2,
-    "descricao": "Coca-cola 2l",
-    "precoUni": 9.90
-  },
-  {
-    "quantidade": 1,
-    "descricao": "Arroz de leite",
-    "precoUni": 12.00
-  },
-  {
-    "quantidade": 3,
-    "descricao": "Churrasco de porco",
-    "precoUni": 5.50
-  },
-  {
-    "quantidade": 1,
-    "descricao": "Baião de dois com queijo e conhaque",
-    "precoUni": 16.90
-  },
-  {
-    "quantidade": 1,
-    "descricao": "Pizza de calabresa",
-    "precoUni": 32.00
-  },
-  {
-    "quantidade": 4,
-    "descricao": "Coxinha de frango",
-    "precoUni": 4.50
-  },
-  {
-    "quantidade": 2,
-    "descricao": "Suco de laranja 500ml",
-    "precoUni": 7.00
-  },
-  {
-    "quantidade": 1,
-    "descricao": "Hambúrguer artesanal",
-    "precoUni": 15.90
-  },
-  {
-    "quantidade": 3,
-    "descricao": "Esfirra de carne",
-    "precoUni": 3.50
-  },
-  {
-    "quantidade": 5,
-    "descricao": "Pastel de queijo",
-    "precoUni": 5.00
-  },
-  {
-    "quantidade": 2,
-    "descricao": "Refrigerante lata 350ml",
-    "precoUni": 6.00
-  },
-  {
-    "quantidade": 1,
-    "descricao": "Macarrão ao molho branco",
-    "precoUni": 18.50
-  },
-  {
-    "quantidade": 1,
-    "descricao": "Bolo de chocolate",
-    "precoUni": 10.00
-  },
-  {
-    "quantidade": 3,
-    "descricao": "Sorvete de creme",
-    "precoUni": 8.50
-  }
-]
+// imports além
+import { DATA } from './data';
 
 export default function ResumoConta() {
+  const navigator = useNavigation();
+
+  const data = DATA;
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -143,6 +76,9 @@ export default function ResumoConta() {
             <Text style={{textAlign: 'center', fontSize: 20, fontWeight: 'bold', marginVertical: 10}}>Cardápio</Text>
             <TouchableOpacity
               style={styles.btnSelecionarProduto}
+              onPress={() => {
+                navigator.navigate('ExibirCardapio')
+              }}
             >
               <Text style={{textAlign: 'center', fontSize: 20, fontWeight: 'bold', marginVertical: 10, color: 'white'}}>+   Selecionar produto</Text>
             </TouchableOpacity>
@@ -152,7 +88,7 @@ export default function ResumoConta() {
               <SafeAreaView>
                 <FlatList
                   style={styles.containerPedidos}
-                  data={DATA}
+                  data={data}
                   renderItem={({item}) => 
                     <ItemPedido quantidade={item.quantidade} descricao={item.descricao} precoUni={item.precoUni} />
                   }
