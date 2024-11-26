@@ -9,6 +9,8 @@ import Home from "../screens/Home";
 import ResumoConta from '../screens/ResumoConta';
 import ExibirCardapio from '../screens/ExibirCardapio';
 import Configuracoes from '../screens/Configuracoes/Configuracoes';
+import EditarMesas from '../screens/Configuracoes/EditarMesas';
+import EditarCardapio from '../screens/Configuracoes/EditarCardapio';
 
 export default function AllRoutes() {
   return (
@@ -48,6 +50,30 @@ export default function AllRoutes() {
         component={Configuracoes}
         options={{
           title: 'Configurações',
+          headerStyle: {
+            backgroundColor: 'white',
+          },
+          headerTintColor: '#1d3461',
+        }}
+      />
+
+      <Stack.Screen
+        name="EditarMesas"
+        component={EditarMesas}
+        options={{
+          title: 'Configurações - Editar mesas',
+          headerStyle: {
+            backgroundColor: 'white',
+          },
+          headerTintColor: '#1d3461',
+        }}
+      />
+
+      <Stack.Screen
+        name="EditarCardapio"
+        component={EditarCardapio}
+        options={{
+          title: 'Configurações - Editar cardápio',
           headerStyle: {
             backgroundColor: 'white',
           },

@@ -3,10 +3,13 @@ import { KeyboardAvoidingView, Platform, StyleSheet, Text, TouchableOpacity, Vie
 
 // componentes
 import RodapeUp from '../../components/RodapeUp';
+import { useNavigation } from '@react-navigation/native';
 
 // outros imports
 
 export default function Configuracoes() {
+  // instância para navegar
+  const navigator = useNavigation();
 
   return (
     <KeyboardAvoidingView
@@ -20,11 +23,11 @@ export default function Configuracoes() {
           <View style={styles.config}>
             <Text style={styles.txt}>Mesas e cardápio</Text>
 
-            <TouchableOpacity style={styles.btnConfig}>
+            <TouchableOpacity style={styles.btnConfig} onPress={() => navigator.navigate('EditarMesas')}>
               <Text style={styles.txtConfig}>Editar/Excluir mesas</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.btnConfig}>
+            <TouchableOpacity style={styles.btnConfig} onPress={() => navigator.navigate('EditarCardapio')}>
               <Text style={styles.txtConfig}>Adicionar novo produto ao cardápio</Text>
             </TouchableOpacity>
           </View>

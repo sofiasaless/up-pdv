@@ -48,7 +48,7 @@ export default function ResumoConta() {
               placeholderTextColor={'#d9d9d9'}
               cursorColor={'white'}
               keyboardType='default'
-              />
+            />
             <View style={styles.formViewInterna}>
               <TextInput
                 style={styles.inputInterno} 
