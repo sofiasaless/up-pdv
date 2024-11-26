@@ -1,6 +1,17 @@
+import { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function ItemCardapio( {descricao, precoUni} ) {
+  const [quantidade, setQuantidade] = useState(1)
+
+  const maisQuantidade = () => {
+    setQuantidade(quantidade + 1);
+  }
+  const menosQuantidade = () => {
+    if (quantidade > 1) {
+      setQuantidade(quantidade - 1);
+    }
+  }
 
   return (
     <View style={styles.itemCardapio}>
@@ -10,15 +21,15 @@ export default function ItemCardapio( {descricao, precoUni} ) {
       </TouchableOpacity>
 
       <View style={styles.qtdControle}>
-        <TouchableOpacity style={styles.plus}>
+        <TouchableOpacity style={styles.plus} onPress={menosQuantidade}>
           <Text style={styles.txtPlus}>-</Text>
         </TouchableOpacity>
 
         <View style={styles.viewQntd}>
-          <Text style={styles.txtPlus}>1</Text>
+          <Text style={styles.txtPlus}>{quantidade}</Text>
         </View>
 
-        <TouchableOpacity style={styles.plus}>
+        <TouchableOpacity style={styles.plus} onPress={maisQuantidade}>
           <Text style={styles.txtPlus}>+</Text>
         </TouchableOpacity>
       </View>

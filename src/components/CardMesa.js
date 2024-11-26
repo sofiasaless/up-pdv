@@ -11,7 +11,7 @@ export default function CardMesa( { status } ) {
       style={
         [styles.container, 
           {
-            backgroundColor: (status === 'Ocupada') ? '#e15554':'#3bb273'
+            backgroundColor: (status === 'Ocupada') ? '#d3d3d3':'#3bb273'
           }
         ]
       }
