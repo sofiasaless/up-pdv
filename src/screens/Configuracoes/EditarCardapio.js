@@ -1,11 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import { FlatList, KeyboardAvoidingView, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { DATA } from '../data';
+import { TextInput } from 'react-native-gesture-handler';
 
 // componentes
 import RodapeUp from '../../components/RodapeUp';
-import { TextInput } from 'react-native-gesture-handler';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { DATA } from '../data';
 import ItemEditarCardapio from '../../components/ItemEditarCardapio';
 
 // outros imports

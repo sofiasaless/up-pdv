@@ -36,10 +36,10 @@ export default function Configuracoes() {
             <Text style={styles.txt}>Histórico e faturamento</Text>
             
             <TouchableOpacity style={styles.btnConfig}>
-              <Text style={styles.txtConfig}>Vendas do dia</Text>
+              <Text style={styles.txtConfig} onPress={() => navigator.navigate('VendasDoDia')}>Vendas do dia</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.btnConfig}>
+            <TouchableOpacity style={styles.btnConfig} onPress={() => navigator.navigate('VendasPorPeriodos')}>
               <Text style={styles.txtConfig}>Vendas por períodos</Text>
             </TouchableOpacity>
 
