@@ -8,6 +8,7 @@ enableScreens();
 import Home from "../screens/Home";
 import ResumoConta from '../screens/ResumoConta';
 import ExibirCardapio from '../screens/ExibirCardapio';
+import Configuracoes from '../screens/Configuracoes/Configuracoes';
 
 export default function AllRoutes() {
   return (
@@ -39,6 +40,18 @@ export default function AllRoutes() {
             backgroundColor: '#1d3461',
           },
           headerTintColor: 'white',
+        }}
+      />
+
+      <Stack.Screen
+        name="Configuracoes"
+        component={Configuracoes}
+        options={{
+          title: 'Configurações',
+          headerStyle: {
+            backgroundColor: 'white',
+          },
+          headerTintColor: '#1d3461',
         }}
       />
         

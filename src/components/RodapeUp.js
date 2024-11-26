@@ -1,10 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 
-export default function RodapeUp() {
+export default function RodapeUp( { cor } ) {
   return (
     <View style={styles.container}>
-      <Text style={styles.texto}>Um serviço @UpBusiness</Text>
+      <Text style={[styles.texto, {color: (cor)?'#1d3461':'#fff'}]}>Um serviço @UpBusiness</Text>
       <StatusBar style="auto" />
     </View>
   );
