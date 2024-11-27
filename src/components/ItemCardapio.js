@@ -1,27 +1,45 @@
 import { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Pedido } from '../model/Pedido';
 
-export default function ItemCardapio( {descricao, precoUni} ) {
+export default function ItemCardapio( {id, descricao, precoUni, onSelect, controleQtd} ) {
   const [quantidade, setQuantidade] = useState(1)
 
   const maisQuantidade = () => {
     setQuantidade(quantidade + 1);
+    atualizarQtd(true)
   }
   const menosQuantidade = () => {
     if (quantidade > 1) {
       setQuantidade(quantidade - 1);
+      atualizarQtd(false)
     }
+  }
+
+  // state pra controlar se o item ta selecionado ou nao
+  const [selecionado, setSelecionado] = useState(true)
+  const produtosSelecionados = (pro) => {
+    onSelect(selecionado, pro);
+  }
+
+  const atualizarQtd = (action) => {
+    controleQtd(id, quantidade, action)
   }
 
   return (
     <View style={styles.itemCardapio}>
-      <TouchableOpacity style={styles.infoItem}>
+      <TouchableOpacity style={[styles.infoItem, {backgroundColor: (selecionado)?'#247ba0':'#3b5486'}]}
+        onPress={() => {
+          setSelecionado(!(selecionado))
+          produtosSelecionados(new Pedido(id, descricao, precoUni, quantidade));
+        }}
+      >
         <Text style={styles.txtDescricao}>{descricao}</Text>
         <Text style={styles.txtPreco}>R$ {precoUni}</Text>
       </TouchableOpacity>
 
       <View style={styles.qtdControle}>
-        <TouchableOpacity style={styles.plus} onPress={menosQuantidade}>
+        <TouchableOpacity style={styles.plus} onPress={menosQuantidade} disabled={selecionado}>
           <Text style={styles.txtPlus}>-</Text>
         </TouchableOpacity>
 
@@ -29,7 +47,7 @@ export default function ItemCardapio( {descricao, precoUni} ) {
           <Text style={styles.txtPlus}>{quantidade}</Text>
         </View>
 
-        <TouchableOpacity style={styles.plus} onPress={maisQuantidade}>
+        <TouchableOpacity style={styles.plus} onPress={maisQuantidade} disabled={selecionado}>
           <Text style={styles.txtPlus}>+</Text>
         </TouchableOpacity>
       </View>

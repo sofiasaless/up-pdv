@@ -2,8 +2,8 @@ import { StatusBar } from 'expo-status-bar';
 import { Alert, KeyboardAvoidingView, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { FlatList, TextInput } from 'react-native-gesture-handler';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
-import { useEffect, useState } from 'react';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useCallback, useEffect, useState } from 'react';
 
 // componentes
 import RodapeUp from '../components/RodapeUp';
@@ -37,7 +37,7 @@ export default function ResumoConta( { route } ) {
 
     let arrayPedidos = []
     arrayPedidos = pedidos
-    arrayPedidos.push(new Pedido(Math.random(), descricao, Number(preco), (Number(quantidade) === 0)? 1:quantidade))
+    arrayPedidos.push(new Pedido(Math.random(), descricao, Number(preco), (Number(quantidade) === 0)? 1:Number(quantidade)))
     setPedidos(arrayPedidos);
 
     // salvando os pedidos da mesa no bando de dados
@@ -58,9 +58,11 @@ export default function ResumoConta( { route } ) {
     })
   }
 
-  useEffect(() => {
-    recuperarDadosDaMesa();
-  },[])
+  useFocusEffect(
+    useCallback(() => {
+      recuperarDadosDaMesa();
+    },[])
+  );
 
   // controle do total
   var total = 0
@@ -141,7 +143,9 @@ export default function ResumoConta( { route } ) {
             <TouchableOpacity
               style={styles.btnSelecionarProduto}
               onPress={() => {
-                navigator.navigate('ExibirCardapio')
+                navigator.navigate('ExibirCardapio', {
+                  idMesa: id
+                })
               }}
             >
               <Text style={{textAlign: 'center', fontSize: 20, fontWeight: 'bold', marginVertical: 10, color: 'white'}}>+   Selecionar produto</Text>

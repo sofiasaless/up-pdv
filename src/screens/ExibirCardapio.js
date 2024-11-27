@@ -14,7 +14,10 @@ import * as SQLite from 'expo-sqlite';
 import useDatabaseConfig from '../database/useDatabaseConfig';
 import { Pedido } from '../model/Pedido';
 
-export default function ExibirConta() {
+export default function ExibirConta( { route } ) {
+
+  // parametros da rota pra controle da mesa
+  const id = route.params.idMesa;
 
   // instâncias
   const database = useDatabaseConfig();
@@ -22,6 +25,8 @@ export default function ExibirConta() {
   // states de controle
   const [produtos, setProdutos] = useState([])
   const [produtosFiltrados, setProdutosFiltrados] = useState([])
+  const [produtosSelecionados, setProdutosSelecionados] = useState([]) // esse state vai guardar os produtos que o usuário selecionar e clicar
+  const [pedidos, setPedidos] = useState([])
 
   // função para fazer a filtração dos produtos de acordo com a pesquisa no search
   // vou exportar essa função para o componente para ser usada dentro dele
@@ -32,6 +37,45 @@ export default function ExibirConta() {
     setProdutosFiltrados(filtrados);
   };
 
+  // guardando os produtos selecionados no array
+  const adicionarProdutoSelecionado = (inserir, produto) => {  
+    if (inserir) {
+      let arrayProdutosSelecionados = []
+      arrayProdutosSelecionados = produtosSelecionados
+      arrayProdutosSelecionados.push(produto);
+      setProdutosSelecionados(arrayProdutosSelecionados);
+    } else { // se for negativo, significa que o produto nao esta mais selecionado e deve ser retirado dos produtos selecionados
+      let index = produtosSelecionados.findIndex(prod => prod.id === produto.id);
+      produtosSelecionados.splice(index, 1);
+    }
+  }
+
+  const atualizarQuantidade = (produto, novaQtd, action) => {
+    let index = produtosSelecionados.findIndex(prod => prod.id === produto);
+    produtosSelecionados[index].quantidade = novaQtd + ((action)?1:-1)
+    produtosSelecionados[index].total = produtosSelecionados[index].preco * (novaQtd + ((action)?1:-1))
+    // console.log('produto que teve a quantidade alterada: ')
+    // console.log(produtosSelecionados[index])
+  }
+
+  const confirmarInserçãoNoPedido = () => {
+    database.abrirMesa(id);
+
+    try {
+      let arrayDePedidos = pedidos.concat(produtosSelecionados);
+      // console.log(arrayDePedidos)
+      // console.log(JSON.stringify(arrayDePedidos));
+      database.atualizarPedidos(id, JSON.stringify(arrayDePedidos));
+      
+    } catch (error) {
+      console.log('erro ao confirmar pedidos no cardapio ', error)
+    } finally {
+
+    }
+
+  }
+
+  // função pra carregar o cardápio
   const recuperarProdutos = async () => {
     const db = await SQLite.openDatabaseAsync(database.databaseOnUse, {
       useNewConnection: true
@@ -55,8 +99,18 @@ export default function ExibirConta() {
     }
   }
 
+  // recuperar os pedidos que já estão na mesa
+  const recuperarPedidos = async () => {
+    database.recuperarMesaPorId(id).then((res) => {
+      if (res.pedidos != null && res.pedidos != '') {
+        setPedidos(JSON.parse(res.pedidos));
+      }
+    })
+  }
+
   useEffect(() => {
     recuperarProdutos();
+    recuperarPedidos();
   }, [])
 
   return (
@@ -74,13 +128,19 @@ export default function ExibirConta() {
               <FlatList
                 showsVerticalScrollIndicator={false}
                 data={produtosFiltrados}
-                renderItem={({item}) => <ItemCardapio descricao={item.descricao} precoUni={item.preco} />}
+                renderItem={({item}) => <ItemCardapio id={item.id} descricao={item.descricao} precoUni={item.preco} onSelect={adicionarProdutoSelecionado} controleQtd={atualizarQuantidade} />}
                 keyExtractor={item => item.id}
               />
             </SafeAreaView>
 
             <View style={styles.viewAdcionar}>
-              <TouchableOpacity style={styles.btnAdicionar}>
+              <TouchableOpacity style={styles.btnAdicionar}
+                onPress={() => {
+                  // console.log(produtosSelecionados)
+                  // console.log(pedidos)
+                  confirmarInserçãoNoPedido();
+                }}
+              >
                 <Text 
                   style={{
                     color: 'white',

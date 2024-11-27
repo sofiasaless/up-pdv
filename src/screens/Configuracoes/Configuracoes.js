@@ -55,7 +55,7 @@ export default function Configuracoes() {
                 <Text style={styles.txtBackup}>Exportar</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.btnBackup} onPress={() => db.verCardapio()}>
+              <TouchableOpacity style={styles.btnBackup} onPress={() => db.verMesas()}>
                 <Text style={styles.txtBackup}>Importar</Text>
               </TouchableOpacity>
             </View>
