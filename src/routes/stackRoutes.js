@@ -8,6 +8,11 @@ enableScreens();
 import Home from "../screens/Home";
 import ResumoConta from '../screens/ResumoConta';
 import ExibirCardapio from '../screens/ExibirCardapio';
+import Configuracoes from '../screens/Configuracoes/Configuracoes';
+import EditarMesas from '../screens/Configuracoes/EditarMesas';
+import EditarCardapio from '../screens/Configuracoes/EditarCardapio';
+import VendasDoDia from '../screens/Configuracoes/VendasDoDia';
+import VendasPorPeriodos from '../screens/Configuracoes/VendasPorPeriodos';
 
 export default function AllRoutes() {
   return (
@@ -41,7 +46,68 @@ export default function AllRoutes() {
           headerTintColor: 'white',
         }}
       />
-        
+
+      <Stack.Screen
+        name="Configuracoes"
+        component={Configuracoes}
+        options={{
+          title: 'Configurações',
+          headerStyle: {
+            backgroundColor: 'white',
+          },
+          headerTintColor: '#1d3461',
+        }}
+      />
+
+      <Stack.Screen
+        name="EditarMesas"
+        component={EditarMesas}
+        options={{
+          title: 'Configurações - Editar mesas',
+          headerStyle: {
+            backgroundColor: 'white',
+          },
+          headerTintColor: '#1d3461',
+        }}
+      />
+
+      <Stack.Screen
+        name="EditarCardapio"
+        component={EditarCardapio}
+        options={{
+          title: 'Configurações - Editar cardápio',
+          headerStyle: {
+            backgroundColor: 'white',
+          },
+          headerTintColor: '#1d3461',
+        }}
+      />
+
+      <Stack.Screen
+        name="VendasDoDia"
+        component={VendasDoDia}
+        options={{
+          title: 'Configurações - Vendas do dia',
+          headerStyle: {
+            backgroundColor: 'white',
+          },
+          headerTintColor: '#1d3461',
+        }}
+      />
+
+      <Stack.Screen
+        name="VendasPorPeriodos"
+        component={VendasPorPeriodos}
+        options={{
+          title: 'Configurações - Vendas gerais',
+          headerStyle: {
+            backgroundColor: 'white',
+          },
+          headerTintColor: '#1d3461',
+        }}
+      />
+
+
     </Stack.Navigator>
   );
 }

@@ -7,8 +7,12 @@ import CardMesa from '../components/CardMesa';
 
 // imports
 import Octicons from '@expo/vector-icons/Octicons';
+import { useNavigation } from '@react-navigation/native';
 
 export default function Home() {
+  // instância para navegação
+  const navigator = useNavigation()
+  
   return (
     <View style={styles.container}>
       <View style={styles.containerIntroducao}>
@@ -17,7 +21,11 @@ export default function Home() {
             <Text style={{color: 'white', fontSize: 30, fontWeight: 'bold'}}>Up! PDV</Text>
             <Text style={{color: 'white', fontSize: 17}}>Bem-vindo ao seu sistema de vendas!</Text>
           </View>
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              navigator.navigate('Configuracoes')
+            }}
+          >
             <Octicons name="gear" size={27} color="white" />
           </TouchableOpacity>
         </View>
@@ -40,9 +48,9 @@ export default function Home() {
         >
           <View style={styles.mesasContainer}>
             <CardMesa status={'Ocupada'}/>
+            <CardMesa status={'Ocupada'}/>
+            <CardMesa status={'Ocupada'}/>
             <CardMesa />
-            <CardMesa status={'Ocupada'}/>
-            <CardMesa status={'Ocupada'}/>
             <CardMesa />
             <CardMesa />
             <CardMesa status={'Ocupada'}/>
