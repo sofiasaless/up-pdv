@@ -40,6 +40,33 @@ export default function useDatabaseConfig() {
 
   }
 
+  // quando encerrar a conta essa função vai ser acionada com posteriores mudanças
+  async function fecharMesa(id) {
+    const db = await SQLite.openDatabaseAsync(databaseOnUse, {
+      useNewConnection: true
+    });
+
+    // criando o statement
+    const statement = await db.prepareAsync(
+      'UPDATE mesas SET status = $status WHERE id = $id'
+    );
+
+    try {
+      let result = await statement.executeAsync(
+        { 
+          $status: 'Disponivel',
+          $id: id,
+        }
+      );
+      console.log('nova atualização:', result, result.changes); 
+    } catch (error) {
+      console.log('erro ao fechar a mesa ', error);
+    } finally {
+      await statement.finalizeAsync();
+    }
+
+  }
+
   // vendo mesas para debug
   async function verMesas() {
     const db = await SQLite.openDatabaseAsync(databaseOnUse, {
@@ -69,7 +96,8 @@ export default function useDatabaseConfig() {
     databaseOnUse,
     criarNovaMesa,
     verMesas,
-    drop
+    drop,
+    fecharMesa
   }
 
 }

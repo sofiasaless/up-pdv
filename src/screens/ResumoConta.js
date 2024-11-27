@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { KeyboardAvoidingView, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { FlatList, TextInput } from 'react-native-gesture-handler';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -13,11 +13,17 @@ import { DATA } from './data';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import useDatabaseConfig from '../database/useDatabaseConfig';
 
-export default function ResumoConta() {
+export default function ResumoConta( { route } ) {
+  // instâncias
   const navigator = useNavigation();
+  const db = useDatabaseConfig();
 
   const data = DATA;
+
+  // parametros da rota
+  const id = route.params.idMesa;
 
   return (
     <KeyboardAvoidingView
@@ -28,7 +34,7 @@ export default function ResumoConta() {
         <View style={styles.containerIntroducao}>
           <View style={styles.containerTxtMesa}>
             <View>
-              <Text style={{color: 'white', fontSize: 40, fontWeight: 'bold'}}>MESA 01</Text>
+              <Text style={{color: 'white', fontSize: 40, fontWeight: 'bold'}}>MESA {id}</Text>
             </View>
           </View>
 
@@ -100,7 +106,14 @@ export default function ResumoConta() {
               </SafeAreaView>
 
               <View style={styles.btnDeConta}>
-                <TouchableOpacity style={[styles.btnEncerrar, {backgroundColor: '#1d3461'}]}>
+                <TouchableOpacity style={[styles.btnEncerrar, {backgroundColor: '#1d3461'}]}
+                  onPress={async () => {
+                    await db.fecharMesa(id).then(() => {
+                      Alert.alert('Encerramento', 'Conta da mesa encerrada com sucesso!');
+                      navigator.goBack();
+                    });
+                  }}
+                >
                   <FontAwesome5 style={[styles.iconBtn]} name="money-bill-alt" size={20} color="white" />
                   <Text style={[styles.txtBtn, {marginLeft: 15}]}>Encerrar conta</Text>
                 </TouchableOpacity>

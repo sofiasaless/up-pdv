@@ -16,7 +16,9 @@ export default function CardMesa( { status, id } ) {
         ]
       }
       onPress={() => {
-        navigator.navigate('ResumoConta')
+        navigator.navigate('ResumoConta', {
+          idMesa: id
+        })
       }}
     >
       <Text style={styles.txtMesa}>MESA {id}</Text>
