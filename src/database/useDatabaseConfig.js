@@ -1,4 +1,5 @@
 import * as SQLite from 'expo-sqlite';
+import { Mesa } from '../model/Mesa';
 
 export default function useDatabaseConfig() {
 
@@ -48,13 +49,14 @@ export default function useDatabaseConfig() {
 
     // criando o statement
     const statement = await db.prepareAsync(
-      'UPDATE mesas SET status = $status WHERE id = $id'
+      'UPDATE mesas SET status = $status, pedidos = $pedidos WHERE id = $id'
     );
 
     try {
       let result = await statement.executeAsync(
         { 
           $status: 'Disponivel',
+          $pedidos: '',
           $id: id,
         }
       );
@@ -65,6 +67,76 @@ export default function useDatabaseConfig() {
       await statement.finalizeAsync();
     }
 
+  }
+
+  async function abrirMesa(id) {
+    const db = await SQLite.openDatabaseAsync(databaseOnUse, {
+      useNewConnection: true
+    });
+
+    // criando o statement
+    const statement = await db.prepareAsync(
+      'UPDATE mesas SET status = $status WHERE id = $id'
+    );
+
+    try {
+      let result = await statement.executeAsync(
+        { 
+          $status: 'Ocupada',
+          $id: id,
+        }
+      );
+      console.log('nova atualização:', result, result.changes); 
+    } catch (error) {
+      console.log('erro ao fechar a mesa ', error);
+    } finally {
+      await statement.finalizeAsync();
+    }
+
+  }
+
+  // atualizando pedidos de uma mesa
+  async function atualizarPedidos(id, pedidos) {
+    // console.log(id, pedidos)
+    // console.log(typeof pedidos)
+    const db = await SQLite.openDatabaseAsync(databaseOnUse, {
+      useNewConnection: true
+    });
+
+    // criando o statement
+    const statement = await db.prepareAsync(
+      'UPDATE mesas SET pedidos = $pedidos WHERE id = $id'
+    );
+
+    try {
+      let result = await statement.executeAsync(
+        { 
+          $pedidos: pedidos,
+          $id: id,
+        }
+      );
+      console.log('nova atualização:', result, result.changes); 
+    } catch (error) {
+      console.log('erro ao atualizar pedidos da mesa ', error);
+    } finally {
+      await statement.finalizeAsync();
+    }
+
+  }
+
+  // retornando mesa específica
+  async function recuperarMesaPorId (id) {
+    const db = await SQLite.openDatabaseAsync(databaseOnUse, {
+      useNewConnection: true,
+    });
+
+    let result;
+    return new Promise(async function (resolve, reject) {
+      result = await db.getFirstAsync(`SELECT * FROM mesas WHERE id = ${id}`);
+      // console.log(result.pedidos)
+      resolve(result)
+      db.closeAsync();
+    })
   }
 
   // vendo mesas para debug
@@ -97,7 +169,10 @@ export default function useDatabaseConfig() {
     criarNovaMesa,
     verMesas,
     drop,
-    fecharMesa
+    fecharMesa,
+    abrirMesa,
+    atualizarPedidos,
+    recuperarMesaPorId
   }
 
 }

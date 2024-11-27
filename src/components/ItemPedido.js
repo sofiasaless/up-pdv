@@ -2,7 +2,7 @@ import Checkbox from 'expo-checkbox';
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-export default function ItemPedido({ quantidade, descricao, precoUni }) {
+export default function ItemPedido({ quantidade, descricao, precoUni, total }) {
   const [isChecked, setChecked] = useState(false);
 
   return (
@@ -42,7 +42,7 @@ export default function ItemPedido({ quantidade, descricao, precoUni }) {
             }
           }
         >
-          {precoUni.toFixed(2)}
+          {precoUni}
         </Text>
         <Text 
           style={
@@ -53,7 +53,7 @@ export default function ItemPedido({ quantidade, descricao, precoUni }) {
             }
           }
         >
-          {(precoUni * quantidade).toFixed(2)}
+          R$ {total}
         </Text>
       </View>
     </View>

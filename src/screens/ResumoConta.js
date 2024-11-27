@@ -3,6 +3,7 @@ import { Alert, KeyboardAvoidingView, Platform, StyleSheet, Text, TouchableOpaci
 import { FlatList, TextInput } from 'react-native-gesture-handler';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import { useEffect, useState } from 'react';
 
 // componentes
 import RodapeUp from '../components/RodapeUp';
@@ -14,16 +15,55 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import useDatabaseConfig from '../database/useDatabaseConfig';
+import { Pedido } from '../model/Pedido';
 
 export default function ResumoConta( { route } ) {
   // instâncias
   const navigator = useNavigation();
   const db = useDatabaseConfig();
 
-  const data = DATA;
-
   // parametros da rota
   const id = route.params.idMesa;
+
+  // states para controle da mesa
+  const [descricao, setDescricao] = useState('');
+  const [preco, setPreco] = useState(0);
+  const [quantidade, setQuantidade] = useState(1);
+  const [pedidos, setPedidos] = useState([])
+
+  const adicionarNoPedidoForaCardapio = () => {
+    // tem que abrir a mesa primeiro
+    db.abrirMesa(id);
+
+    let arrayPedidos = []
+    arrayPedidos = pedidos
+    arrayPedidos.push(new Pedido(Math.random(), descricao, Number(preco), (Number(quantidade) === 0)? 1:quantidade))
+    setPedidos(arrayPedidos);
+
+    // salvando os pedidos da mesa no bando de dados
+    try {
+      db.atualizarPedidos(id, JSON.stringify(pedidos));
+    } catch (error) {
+      console.log('erro ao atualizar mesa: ', error);
+    } finally {
+      recuperarDadosDaMesa();
+    }
+  }
+
+  const recuperarDadosDaMesa = async () => {
+    db.recuperarMesaPorId(id).then((res) => {
+      if (res.pedidos != null && res.pedidos != '') {
+        setPedidos(JSON.parse(res.pedidos));
+      }
+    })
+  }
+
+  useEffect(() => {
+    recuperarDadosDaMesa();
+  },[])
+
+  // controle do total
+  var total = 0
 
   return (
     <KeyboardAvoidingView
@@ -44,7 +84,17 @@ export default function ResumoConta( { route } ) {
             >Total</Text>
             <Text 
               style={{fontSize: 24, fontWeight: 'bold'}} 
-            >R$ 55,90</Text>
+            > 
+              {
+                (pedidos === null)?
+                ''
+                :
+                pedidos.map((p) => {
+                  total += p.total;
+                })
+              }
+              R$ {total.toFixed(2)}
+            </Text>
           </View>
         </View>
         
@@ -57,6 +107,7 @@ export default function ResumoConta( { route } ) {
               placeholderTextColor={'#d9d9d9'}
               cursorColor={'white'}
               keyboardType='default'
+              onChangeText={setDescricao}
             />
             <View style={styles.formViewInterna}>
               <TextInput
@@ -65,6 +116,7 @@ export default function ResumoConta( { route } ) {
                 placeholderTextColor={'#d9d9d9'}
                 cursorColor={'white'}
                 keyboardType='numeric'
+                onChangeText={setPreco}
               />
               <TextInput
                 style={styles.inputInterno} 
@@ -72,9 +124,12 @@ export default function ResumoConta( { route } ) {
                 placeholderTextColor={'#d9d9d9'}
                 cursorColor={'white'}
                 keyboardType='numeric'
+                onChangeText={setQuantidade}
+                value={quantidade}
               />
               <TouchableOpacity
                 style={styles.btnAdicionar}
+                onPress={adicionarNoPedidoForaCardapio}
               >
                 <Text style={{textAlign: 'center', color: 'white', fontWeight: 'bold', fontSize: 18}}>Adicionar</Text>
               </TouchableOpacity>
@@ -97,9 +152,9 @@ export default function ResumoConta( { route } ) {
               <SafeAreaView>
                 <FlatList
                   style={styles.containerPedidos}
-                  data={data}
+                  data={pedidos}
                   renderItem={({item}) => 
-                    <ItemPedido quantidade={item.quantidade} descricao={item.descricao} precoUni={item.precoUni} />
+                    <ItemPedido quantidade={item.quantidade} descricao={item.descricao} precoUni={item.preco} total={item.total} />
                   }
                   keyExtractor={item => Math.random()}
                 />
