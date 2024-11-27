@@ -51,7 +51,7 @@ export default function Configuracoes() {
             <Text style={styles.txt}>Backup</Text>
 
             <View style={styles.viewBackup}>
-              <TouchableOpacity style={styles.btnBackup}>
+              <TouchableOpacity style={styles.btnBackup} onPress={() => db.drop()}>
                 <Text style={styles.txtBackup}>Exportar</Text>
               </TouchableOpacity>
 

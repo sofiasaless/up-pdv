@@ -42,6 +42,7 @@ export default function Home() {
       // console.log('mesas recuperadas com sucesso: ', mesas)
     } catch (error) {
       console.log('erro ao recuperar as mesas: ', error)
+      setMesas([])
     } finally {
       database.closeAsync();
     }
