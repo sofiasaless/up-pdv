@@ -10,6 +10,9 @@ import ItemPedido from '../components/ItemPedido';
 
 // imports além
 import { DATA } from './data';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 
 export default function ResumoConta() {
   const navigator = useNavigation();
@@ -98,15 +101,18 @@ export default function ResumoConta() {
 
               <View style={styles.btnDeConta}>
                 <TouchableOpacity style={[styles.btnEncerrar, {backgroundColor: '#1d3461'}]}>
-                  <Text style={styles.txtBtn}>Encerrar conta</Text>
+                  <FontAwesome5 style={[styles.iconBtn]} name="money-bill-alt" size={20} color="white" />
+                  <Text style={[styles.txtBtn, {marginLeft: 15}]}>Encerrar conta</Text>
                 </TouchableOpacity>
 
                 <View style={styles.btnView}>
                   <TouchableOpacity style={[styles.btnMenor, {backgroundColor: '#3bb273'}]}>
-                    <Text style={styles.txtBtn}>Tranferir</Text>
+                    <MaterialIcons style={styles.iconBtn} name="move-down" size={20} color="white" />
+                    <Text style={styles.txtBtn}>Transferir</Text>
                   </TouchableOpacity>
 
                   <TouchableOpacity style={[styles.btnMenor, {backgroundColor: '#e15554'}]}>
+                    <Ionicons style={styles.iconBtn} name="trash-outline" size={20} color="white" />
                     <Text style={styles.txtBtn}>Excluir</Text>
                   </TouchableOpacity>
                 </View>                
@@ -198,9 +204,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#247ba0',
     width: '100%',
   },
+  iconBtn: {
+    // backgroundColor: 'orange',
+  },
   txtBtn: {
     color: 'white',
-    textAlign: 'center',
     fontSize: 17,
   },
   containerPedidos: {
@@ -215,12 +223,11 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   btnEncerrar: {
-    display: 'flex',
     flexDirection: 'row',
     width: '90%',
     borderRadius: 5,
-    justifyContent: 'center',
-    padding: 10
+    padding: 10,
+    justifyContent: 'center'
   },
   btnView: {
     display: 'flex',
@@ -232,5 +239,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     borderRadius: 5,
+    flexDirection: 'row',
+    justifyContent: 'space-evenly'
   }
 });
