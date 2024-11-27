@@ -4,12 +4,14 @@ import { KeyboardAvoidingView, Platform, StyleSheet, Text, TouchableOpacity, Vie
 // componentes
 import RodapeUp from '../../components/RodapeUp';
 import { useNavigation } from '@react-navigation/native';
+import useDatabaseConfig from '../../database/useDatabaseConfig';
 
 // outros imports
 
 export default function Configuracoes() {
-  // instância para navegar
+  // instâncias
   const navigator = useNavigation();
+  const db = useDatabaseConfig();
 
   return (
     <KeyboardAvoidingView
@@ -53,7 +55,7 @@ export default function Configuracoes() {
                 <Text style={styles.txtBackup}>Exportar</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.btnBackup}>
+              <TouchableOpacity style={styles.btnBackup} onPress={() => db.verMesas()}>
                 <Text style={styles.txtBackup}>Importar</Text>
               </TouchableOpacity>
             </View>

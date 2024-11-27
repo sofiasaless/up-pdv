@@ -1,5 +1,9 @@
 import { StatusBar } from 'expo-status-bar';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useCallback, useState } from 'react';
+
+import * as SQLite from 'expo-sqlite';
 
 // componentes
 import RodapeUp from '../components/RodapeUp';
@@ -7,11 +11,47 @@ import CardMesa from '../components/CardMesa';
 
 // imports
 import Octicons from '@expo/vector-icons/Octicons';
-import { useNavigation } from '@react-navigation/native';
+import useDatabaseConfig from '../database/useDatabaseConfig';
+import { Mesa } from '../model/Mesa';
 
 export default function Home() {
-  // instância para navegação
+  // instâncias
   const navigator = useNavigation()
+  const db = useDatabaseConfig();
+
+  // state para guardar as mesas
+  const [mesas, setMesas] = useState([]);
+
+  const recuperarMesas = async () => {
+    const database = await SQLite.openDatabaseAsync(db.databaseOnUse, {
+      useNewConnection: true
+    });
+
+    // console.log('na funcao de recuperar')
+    try {
+      const allRows = await database.getAllAsync('SELECT * FROM mesas');
+
+      setMesas([])
+      let arrayMesas = []
+      for (const row of allRows) {
+        arrayMesas.push(new Mesa(row.id, row.status, row.pedidos));
+      }
+
+      setMesas(arrayMesas);
+
+      // console.log('mesas recuperadas com sucesso: ', mesas)
+    } catch (error) {
+      console.log('erro ao recuperar as mesas: ', error)
+    } finally {
+      database.closeAsync();
+    }
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      recuperarMesas();
+    },[])
+  );
   
   return (
     <View style={styles.container}>
@@ -31,7 +71,15 @@ export default function Home() {
         </View>
 
         <View style={styles.containerNovaMesa}>
-          <TouchableOpacity style={styles.btnNovaMesa}>
+          <TouchableOpacity style={styles.btnNovaMesa}
+            onPress={async () => {
+              await db.criarNovaMesa().then(() => {
+                Alert.alert('Registro', 'Nova mesa adicionada com sucesso!');
+                recuperarMesas();
+              });
+              // console.log(mesas)
+            }}
+          >
             <Text style={{textAlign: 'center', fontSize: 20, color: 'white', alignItems: 'center'}}>+ Nova mesa</Text>
           </TouchableOpacity>
         </View>
@@ -47,14 +95,11 @@ export default function Home() {
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.mesasContainer}>
-            <CardMesa status={'Ocupada'}/>
-            <CardMesa status={'Ocupada'}/>
-            <CardMesa status={'Ocupada'}/>
-            <CardMesa />
-            <CardMesa />
-            <CardMesa />
-            <CardMesa status={'Ocupada'}/>
-            <CardMesa />
+            {
+              mesas.map((m) => (
+                <CardMesa key={m.id} status={m.status} id={m.id} />
+              ))
+            }
           </View>
         </ScrollView>
 
