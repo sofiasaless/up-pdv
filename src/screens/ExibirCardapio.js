@@ -10,19 +10,27 @@ import BarraPesquisar from '../components/BarraPesquisar';
 import ItemCardapio from '../components/ItemCardapio';
 
 // outros imports
-import { DATA } from './data';
 import * as SQLite from 'expo-sqlite';
 import useDatabaseConfig from '../database/useDatabaseConfig';
 import { Pedido } from '../model/Pedido';
 
 export default function ExibirConta() {
-  const data = DATA;
 
   // instâncias
   const database = useDatabaseConfig();
 
   // states de controle
   const [produtos, setProdutos] = useState([])
+  const [produtosFiltrados, setProdutosFiltrados] = useState([])
+
+  // função para fazer a filtração dos produtos de acordo com a pesquisa no search
+  // vou exportar essa função para o componente para ser usada dentro dele
+  const pesquisarPorProduto = (pesquisa) => {
+    const filtrados = produtos.filter(item =>
+      item.descricao.toLowerCase().includes(pesquisa.toLowerCase())
+    );
+    setProdutosFiltrados(filtrados);
+  };
 
   const recuperarProdutos = async () => {
     const db = await SQLite.openDatabaseAsync(database.databaseOnUse, {
@@ -36,6 +44,7 @@ export default function ExibirConta() {
         arrayProdutos.push(new Pedido(row.id, row.descricao, row.preco, 1))
       }
       setProdutos(arrayProdutos);
+      setProdutosFiltrados(arrayProdutos);
       // console.log('produtos recuperados')
       // console.log(produtos)
 
@@ -58,13 +67,13 @@ export default function ExibirConta() {
       <View style={styles.container}>
         
         <View style={styles.content}>
-          <BarraPesquisar />
+          <BarraPesquisar pesquisarPor={pesquisarPorProduto}/>
 
           <SafeAreaProvider style={{width: '100%'}}>
             <SafeAreaView style={styles.contentLista}>
               <FlatList
                 showsVerticalScrollIndicator={false}
-                data={produtos}
+                data={produtosFiltrados}
                 renderItem={({item}) => <ItemCardapio descricao={item.descricao} precoUni={item.preco} />}
                 keyExtractor={item => item.id}
               />

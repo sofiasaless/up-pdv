@@ -4,7 +4,15 @@ import { View, TextInput, StyleSheet } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 
 // componente de barra de pesquisa para usar na visualização de produtos
-export default function BarraPesquisar() {
+export default function BarraPesquisar( { pesquisarPor } ) {
+  const [pesquisa, setPesquisa] = useState('');
+
+  const pesquisarPorProduto = (text) => {
+    setPesquisa(text);
+    if (pesquisarPor) {
+      pesquisarPor(text);
+    }
+  };
 
   return (
     <View style={styles.boxInputAndIcon}>
@@ -13,6 +21,8 @@ export default function BarraPesquisar() {
         placeholder={"Procurar produto..."}
         placeholderTextColor={'#d9d9d9'}
         cursorColor={'white'}
+        value={pesquisa}
+        onChangeText={pesquisarPorProduto}
       />
       <AntDesign name="search1" size={20} color="white" style={styles.imageIcon} />
     </View>
