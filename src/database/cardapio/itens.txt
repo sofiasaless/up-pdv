@@ -1,0 +1,43 @@
+Coca-cola lata: 5.00
+Fanta uva: 5.00
+Fanta laranja: 5.00 
+Sprite: 5.00
+Cajuina: 5.00
+Pepsi 1L: 8.00
+Guaraná 1L: 8.00
+Sukita: 8.00
+Cajuina 600ml: 7.00
+Coca: 7.00
+Budweiser: 7.50
+Stella: 8.00
+Heineken: 10.00
+Redbull: 12.00
+Monster: 10.00
+Coca-cola 1L: 8.00
+Coco-cola Ks: 4.00
+Cachaça da branca dose: 2.50
+Cachaça da branca terça: 5.00
+Cachaça da branca burrin: 8.00
+Cachaça 51 amarela dose: 2.50
+Cachaça 51 amarela Terça: 5.00
+Cachaça 51 amarela burrin: 8.00
+Cachaça mestre dose: 3.00
+Cachaça mestre Terça: 6.00
+Cachaça mestre burrin: 9.00
+Cachaça amarela dose: 2.50
+Cachaça amarela Terça: 5.00
+Cachaça amarela burrin: 8.00
+Dreher dose: 3.00
+Dreher Terça: 7.00
+Dreher burrin: 11.00
+Boemia: 9.00
+Brahma duplo malte: 9.00
+Skol: 9.00
+Skol buchudinha: 4.00
+Boemka buchudinha: 4.00
+Brahma duplo malte buchudinha: 4.50
+Churrasco gado: 12.00
+Churrasco porco: 12.00
+Churrasco frango: 12.00
+Coração de galinha: 10.00
+Linguiça uni: 3.00
