@@ -64,6 +64,7 @@ const styles = StyleSheet.create({
   txtPreco: {
     color: 'white',
     fontSize: 18,
+    fontWeight: 'bold'
     // backgroundColor: 'red'
   },
   qtdControle: {

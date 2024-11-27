@@ -1,7 +1,10 @@
 import * as SQLite from 'expo-sqlite';
-import { Mesa } from '../model/Mesa';
+import { itensDoCardapioEmLinhaDeInsercao } from './cardapio/itensCardapio';
 
 export default function useDatabaseConfig() {
+
+  // produtos do cardapio
+  const produtos = itensDoCardapioEmLinhaDeInsercao;
 
   // variável com nome do banco de dados em uso, também coloquei ela pra exportar, vai ficar mais prático pra abrir o banco
   const databaseOnUse = 'cantinhoDB';
@@ -32,6 +35,8 @@ export default function useDatabaseConfig() {
   
       // pra debug
       console.log('mesa registrara com sucesso');
+
+      tabelaCardapio();
     } catch (error) {
       console.log('erro ao criar tabela e inserir mesa ', error);
     } finally {
@@ -164,6 +169,51 @@ export default function useDatabaseConfig() {
     db.closeAsync();
   }
 
+  // cardápio
+  async function tabelaCardapio() {
+    const db = await SQLite.openDatabaseAsync(databaseOnUse, {
+      useNewConnection: true
+    });
+
+    try {
+      await db.execAsync(`
+        PRAGMA journal_mode = WAL;
+        CREATE TABLE IF NOT EXISTS cardapio 
+        (
+          id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
+          descricao TEXT NOT NULL, 
+          preco REAL NOT NULL,
+          quantidade INTEGER
+        );
+      `);
+      console.log('tabela de cardapio criada com sucesso')
+  
+      // verificando se os produtos já estão ou não inseridos
+      const result = await db.getFirstAsync('SELECT COUNT(*) FROM cardapio');
+  
+      // se a quantidade de linhas for 0 significa que os produtos precisam ser inseridos 
+      (result['COUNT(*)'] == 0) ? await db.runAsync( produtos) : console.log('os produtos já estão cadastrados')
+    } catch (error) {
+      console.log('erro ao criar tabela de cardapio ', error)
+    } finally {
+      db.closeAsync();
+    }
+
+  }
+
+  async function verCardapio() {
+    const db = await SQLite.openDatabaseAsync(databaseOnUse, {
+      useNewConnection: true
+    });
+
+    const allRows = await db.getAllAsync('SELECT * FROM cardapio');
+    for (const row of allRows) {
+      console.log(row.id, row.descricao, row.preco);
+    }
+    
+    db.closeAsync();
+  }
+
   return { 
     databaseOnUse,
     criarNovaMesa,
@@ -172,7 +222,8 @@ export default function useDatabaseConfig() {
     fecharMesa,
     abrirMesa,
     atualizarPedidos,
-    recuperarMesaPorId
+    recuperarMesaPorId,
+    verCardapio
   }
 
 }
