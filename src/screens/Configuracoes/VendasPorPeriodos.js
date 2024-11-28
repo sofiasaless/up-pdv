@@ -14,6 +14,7 @@ import { useEffect, useState } from 'react';
 import useConvertors from '../../util/useConvertors';
 import useDatabaseConfig from '../../database/useDatabaseConfig';
 import { Pedido } from '../../model/Pedido';
+import useMakeDoc from '../../util/useMakeDoc';
 
 export default function VendasPorPeriodos() {
   const data = DATA;
@@ -171,7 +172,12 @@ export default function VendasPorPeriodos() {
               </Text>
             </View>
 
-            <TouchableOpacity style={styles.btnCompartilhar}>
+            <TouchableOpacity style={styles.btnCompartilhar}
+              onPress={() => {
+                const recibo = useMakeDoc();
+                recibo.printToFile(`Vendas de ${dataDeInicio.toLocaleDateString()} a ${dataDeFim.toLocaleDateString()}`, pedidos);
+              }}
+            >
               <Text style={styles.txtCompartilhar}>Compartilhar</Text>
               <Entypo name="share-alternative" size={20} color="black" />
             </TouchableOpacity>

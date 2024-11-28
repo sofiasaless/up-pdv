@@ -10,6 +10,7 @@ import ItemHistorico from '../../components/ItemHistorico';
 import Entypo from '@expo/vector-icons/Entypo';
 import useDatabaseConfig from '../../database/useDatabaseConfig';
 import { useEffect, useState } from 'react';
+import useMakeDoc from '../../util/useMakeDoc';
 
 export default function VendasDoDia() {
   const data = DATA;
@@ -75,8 +76,10 @@ export default function VendasDoDia() {
 
             <TouchableOpacity style={styles.btnCompartilhar}
               onPress={() => {
-                console.log(pedidosDoDia)
+                // console.log(pedidosDoDia)
                 // db.recuperarHistoricoDoDia();
+                const recibo = useMakeDoc();
+                recibo.printToFile(`Vendas do dia ${new Date().toLocaleDateString()}`, pedidosDoDia);
               }}
             >
               <Text style={styles.txtCompartilhar}>Compartilhar</Text>
