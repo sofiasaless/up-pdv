@@ -1,16 +1,24 @@
 import Checkbox from 'expo-checkbox';
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { Pedido } from '../model/Pedido';
 
-export default function ItemPedido({ quantidade, descricao, precoUni }) {
+export default function ItemPedido({ id, quantidade, descricao, precoUni, total, onCheck }) {
   const [isChecked, setChecked] = useState(false);
+
+  const checking = () => {
+    setChecked(!isChecked)
+    // console.log(id);
+    // console.log(isChecked);
+    onCheck(id, new Pedido(id, descricao, precoUni, quantidade, total), isChecked);
+  }
 
   return (
     <View style={styles.container}>
       <Checkbox
         style={styles.checkbox}
         value={isChecked}
-        onValueChange={setChecked}
+        onValueChange={checking}
         color={'#247ba0'}
       />
       <View style={styles.txtInterno}>
@@ -42,7 +50,7 @@ export default function ItemPedido({ quantidade, descricao, precoUni }) {
             }
           }
         >
-          {precoUni.toFixed(2)}
+          {precoUni}
         </Text>
         <Text 
           style={
@@ -53,7 +61,7 @@ export default function ItemPedido({ quantidade, descricao, precoUni }) {
             }
           }
         >
-          {(precoUni * quantidade).toFixed(2)}
+          R$ {total}
         </Text>
       </View>
     </View>

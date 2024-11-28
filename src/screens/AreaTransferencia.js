@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useCallback, useState } from 'react';
 
@@ -7,17 +7,21 @@ import * as SQLite from 'expo-sqlite';
 
 // componentes
 import RodapeUp from '../components/RodapeUp';
-import CardMesa from '../components/CardMesa';
+import CardMesaTransferencia from '../components/CardMesaTransferencia';
 
 // imports
 import Octicons from '@expo/vector-icons/Octicons';
 import useDatabaseConfig from '../database/useDatabaseConfig';
 import { Mesa } from '../model/Mesa';
 
-export default function Home() {
+export default function AreaTransferencia( { route } ) {
   // instâncias
   const navigator = useNavigation()
   const db = useDatabaseConfig();
+
+  // parametros
+  const pedidos = route.params.pedidos
+  const idMesaOrigem = route.params.mesaOrigem
 
   // state para guardar as mesas
   const [mesas, setMesas] = useState([]);
@@ -56,41 +60,7 @@ export default function Home() {
   
   return (
     <View style={styles.container}>
-      <View style={styles.containerIntroducao}>
-        <View style={styles.containerTextoOpcao}>
-          <View>
-            <Text style={{color: 'white', fontSize: 30, fontWeight: 'bold'}}>Up! PDV</Text>
-            <Text style={{color: 'white', fontSize: 17}}>Bem-vindo ao seu sistema de vendas!</Text>
-          </View>
-          <TouchableOpacity
-            onPress={() => {
-              navigator.navigate('Configuracoes')
-            }}
-          >
-            <Octicons name="gear" size={27} color="white" />
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.containerNovaMesa}>
-          <TouchableOpacity style={styles.btnNovaMesa}
-            onPress={async () => {
-              await db.criarNovaMesa().then(() => {
-                Alert.alert('Registro', 'Nova mesa adicionada com sucesso!');
-                recuperarMesas();
-              });
-              // console.log(mesas)
-            }}
-          >
-            <Text style={{textAlign: 'center', fontSize: 20, color: 'white', alignItems: 'center'}}>+ Nova mesa</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-      
-
       <View style={styles.content}>
-        <View style={styles.contentIntro}>
-          <Text style={styles.txtMesa}>Mesas</Text>
-        </View>
 
         <ScrollView style={styles.contentMesas}
           showsVerticalScrollIndicator={false}
@@ -98,7 +68,7 @@ export default function Home() {
           <View style={styles.mesasContainer}>
             {
               mesas.map((m) => (
-                <CardMesa key={m.id} status={m.status} id={m.id} />
+                <CardMesaTransferencia key={m.id} status={m.status} id={m.id} pedidosTransferidos={pedidos} mesaOrigem={idMesaOrigem} />
               ))
             }
           </View>
@@ -121,45 +91,13 @@ const styles = StyleSheet.create({
     width: '100%',
     flex: 1
   },
-  containerIntroducao: {
-    justifyContent: 'flex-start',
-    // backgroundColor: 'red',
-    width: '90%',
-  },
-  containerTextoOpcao: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between'
-  },
-  containerNovaMesa: {
-    display: 'flex',
-    alignItems: 'center',
-    paddingVertical: 18,
-  },
-  btnNovaMesa: {
-    backgroundColor: '#247ba0',
-    padding: 10,
-    width: '60%',
-    borderRadius: 15,
-    display: 'flex',
-  },
   content: {
     backgroundColor: '#fff',
     width: '100%',
-    height: '70%',
+    height: '95%',
     borderRadius: 15,
     display: 'flex',
     alignItems: 'center'
-  },
-  contentIntro: {
-    width: '90%',
-    // backgroundColor: 'green',
-    paddingVertical: 15,
-    borderBottomWidth: 1,
-  },
-  txtMesa: {
-    fontSize: 50,
-    textAlign: 'center'
   },
   contentMesas: {
     // backgroundColor: 'yellow',
@@ -170,12 +108,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-  },
-  ex: {
-    backgroundColor: 'orange',
-    padding: 10,
-    marginBottom: 10,
-    textAlign: 'center',
-    width: '45%'
   }
 });

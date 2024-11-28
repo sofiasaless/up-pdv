@@ -35,6 +35,6 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
-database/
 .vscode/
 design/
+src/database/lateDatabase.js

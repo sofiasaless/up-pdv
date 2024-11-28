@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export default function CardMesa( { status } ) {
+export default function CardMesa( { status, id } ) {
   // para fazer navegações
   const navigator = useNavigation();
   
@@ -11,15 +11,17 @@ export default function CardMesa( { status } ) {
       style={
         [styles.container, 
           {
-            backgroundColor: (status === 'Ocupada') ? '#d3d3d3':'#3bb273'
+            backgroundColor: (status === 'Ocupada') ? '#3bb273':'#d3d3d3'
           }
         ]
       }
       onPress={() => {
-        navigator.navigate('ResumoConta')
+        navigator.navigate('ResumoConta', {
+          idMesa: id
+        })
       }}
     >
-      <Text style={styles.txtMesa}>MESA 01</Text>
+      <Text style={styles.txtMesa}>MESA {id}</Text>
     </TouchableOpacity>
   );
 }
@@ -31,7 +33,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 14 ,
     height: 130,
-    marginBottom: 20
+    marginBottom: 20,
+    width: '47%'
   },
   txtMesa: {
     padding: 20,

@@ -1,23 +1,119 @@
 import { StatusBar } from 'expo-status-bar';
-import { KeyboardAvoidingView, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { FlatList, TextInput } from 'react-native-gesture-handler';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useCallback, useEffect, useState } from 'react';
 
 // componentes
 import RodapeUp from '../components/RodapeUp';
 import ItemPedido from '../components/ItemPedido';
 
 // imports além
-import { DATA } from './data';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import useDatabaseConfig from '../database/useDatabaseConfig';
+import { Pedido } from '../model/Pedido';
 
-export default function ResumoConta() {
+export default function ResumoConta( { route } ) {
+  // instâncias
   const navigator = useNavigation();
+  const db = useDatabaseConfig();
 
-  const data = DATA;
+  // parametros da rota
+  const id = route.params.idMesa;
+
+  // states para controle da mesa
+  const [descricao, setDescricao] = useState('');
+  const [preco, setPreco] = useState(0);
+  const [quantidade, setQuantidade] = useState(1);
+  const [pedidos, setPedidos] = useState([])
+
+  const adicionarNoPedidoForaCardapio = () => {
+    // tem que abrir a mesa primeiro
+    db.abrirMesa(id);
+
+    let arrayPedidos = []
+    arrayPedidos = pedidos
+    arrayPedidos.push(new Pedido(Math.random(), descricao, Number(preco), (Number(quantidade) === 0)? 1:Number(quantidade)))
+    setPedidos(arrayPedidos);
+
+    // salvando os pedidos da mesa no bando de dados
+    try {
+      db.atualizarPedidos(id, JSON.stringify(pedidos));
+    } catch (error) {
+      console.log('erro ao atualizar mesa: ', error);
+    } finally {
+      recuperarDadosDaMesa();
+    }
+  }
+
+  // selecionando itens do pedido para manipulação
+  const [itensSelecionados, setItensSelecionados] = useState([])
+  const [itensSelecionadosTransferencia, setItensSelecionadosTransferencia] = useState([])
+  
+  // apagando itens do pedido
+  const selecionadosPorCheck = (id, pedido, action) => {
+    if (!action) {
+      let arraySelecionados = itensSelecionados;
+      arraySelecionados.push(id);
+      setItensSelecionados(arraySelecionados);
+
+      let arraySelecionadosPedidos = itensSelecionadosTransferencia;
+      arraySelecionadosPedidos.push(pedido);
+      setItensSelecionadosTransferencia(arraySelecionadosPedidos);
+    } else { // se for true tem que tirar o id da lista pq ele não tá mais selecionado
+      let index = itensSelecionados.find(e => e === id);
+      itensSelecionados.splice(index, 1);
+
+      let indexP = itensSelecionadosTransferencia.findIndex(pedi => pedi.id === id)
+      itensSelecionadosTransferencia.splice(indexP, 1);
+    }
+
+    // console.log('itens que foram selecionados')
+    // console.log(itensSelecionados)
+  }
+
+  const excluirItensDoPedido = () => {
+    // colocar um alert caso ele nao tenha selecionado nenhum item
+
+    // percorrendo os pedidos e tirando
+    let arrayPedidos = pedidos
+    pedidos.forEach((p, indice) => {
+      itensSelecionados.forEach((i) => {
+        if (p.id === i) {
+          arrayPedidos.splice(indice, 1);
+        }
+      })
+    })
+
+    // atualizando a mesa no banco de dados
+    try {
+      db.atualizarPedidos(id, JSON.stringify(arrayPedidos));
+    } catch (error) {
+      console.log('erro ao atualizar mesa com itens deletados ', error);
+    } finally {
+      recuperarDadosDaMesa();
+    }
+  }
+
+  const recuperarDadosDaMesa = async () => {
+    db.recuperarMesaPorId(id).then((res) => {
+      if (res.pedidos != null && res.pedidos != '') {
+        setPedidos(JSON.parse(res.pedidos));
+      }
+    })
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      recuperarDadosDaMesa();
+    },[])
+  );
+
+  // controle do total
+  var total = 0
 
   return (
     <KeyboardAvoidingView
@@ -28,7 +124,7 @@ export default function ResumoConta() {
         <View style={styles.containerIntroducao}>
           <View style={styles.containerTxtMesa}>
             <View>
-              <Text style={{color: 'white', fontSize: 40, fontWeight: 'bold'}}>MESA 01</Text>
+              <Text style={{color: 'white', fontSize: 40, fontWeight: 'bold'}}>MESA {id}</Text>
             </View>
           </View>
 
@@ -38,7 +134,17 @@ export default function ResumoConta() {
             >Total</Text>
             <Text 
               style={{fontSize: 24, fontWeight: 'bold'}} 
-            >R$ 55,90</Text>
+            > 
+              {
+                (pedidos === null)?
+                ''
+                :
+                pedidos.map((p) => {
+                  total += p.total;
+                })
+              }
+              R$ {total.toFixed(2)}
+            </Text>
           </View>
         </View>
         
@@ -51,6 +157,7 @@ export default function ResumoConta() {
               placeholderTextColor={'#d9d9d9'}
               cursorColor={'white'}
               keyboardType='default'
+              onChangeText={setDescricao}
             />
             <View style={styles.formViewInterna}>
               <TextInput
@@ -59,6 +166,7 @@ export default function ResumoConta() {
                 placeholderTextColor={'#d9d9d9'}
                 cursorColor={'white'}
                 keyboardType='numeric'
+                onChangeText={setPreco}
               />
               <TextInput
                 style={styles.inputInterno} 
@@ -66,9 +174,12 @@ export default function ResumoConta() {
                 placeholderTextColor={'#d9d9d9'}
                 cursorColor={'white'}
                 keyboardType='numeric'
+                onChangeText={setQuantidade}
+                value={quantidade}
               />
               <TouchableOpacity
                 style={styles.btnAdicionar}
+                onPress={adicionarNoPedidoForaCardapio}
               >
                 <Text style={{textAlign: 'center', color: 'white', fontWeight: 'bold', fontSize: 18}}>Adicionar</Text>
               </TouchableOpacity>
@@ -80,7 +191,9 @@ export default function ResumoConta() {
             <TouchableOpacity
               style={styles.btnSelecionarProduto}
               onPress={() => {
-                navigator.navigate('ExibirCardapio')
+                navigator.navigate('ExibirCardapio', {
+                  idMesa: id
+                })
               }}
             >
               <Text style={{textAlign: 'center', fontSize: 20, fontWeight: 'bold', marginVertical: 10, color: 'white'}}>+   Selecionar produto</Text>
@@ -91,27 +204,43 @@ export default function ResumoConta() {
               <SafeAreaView>
                 <FlatList
                   style={styles.containerPedidos}
-                  data={data}
+                  data={pedidos}
                   renderItem={({item}) => 
-                    <ItemPedido quantidade={item.quantidade} descricao={item.descricao} precoUni={item.precoUni} />
+                    <ItemPedido id={item.id} quantidade={item.quantidade} descricao={item.descricao} precoUni={item.preco} total={item.total} onCheck={selecionadosPorCheck} />
                   }
                   keyExtractor={item => Math.random()}
                 />
               </SafeAreaView>
 
               <View style={styles.btnDeConta}>
-                <TouchableOpacity style={[styles.btnEncerrar, {backgroundColor: '#1d3461'}]}>
+                <TouchableOpacity style={[styles.btnEncerrar, {backgroundColor: '#1d3461'}]}
+                  onPress={async () => {
+                    await db.fecharMesa(id).then(() => {
+                      Alert.alert('Encerramento', 'Conta da mesa encerrada com sucesso!');
+                      navigator.goBack();
+                    });
+                  }}
+                >
                   <FontAwesome5 style={[styles.iconBtn]} name="money-bill-alt" size={20} color="white" />
                   <Text style={[styles.txtBtn, {marginLeft: 15}]}>Encerrar conta</Text>
                 </TouchableOpacity>
 
                 <View style={styles.btnView}>
-                  <TouchableOpacity style={[styles.btnMenor, {backgroundColor: '#3bb273'}]}>
+                  <TouchableOpacity style={[styles.btnMenor, {backgroundColor: '#3bb273'}]}
+                    onPress={() => {
+                      navigator.navigate('AreaTransferencia', {
+                        pedidos: itensSelecionadosTransferencia,
+                        mesaOrigem: id
+                      })
+                    }}
+                  >
                     <MaterialIcons style={styles.iconBtn} name="move-down" size={20} color="white" />
                     <Text style={styles.txtBtn}>Transferir</Text>
                   </TouchableOpacity>
 
-                  <TouchableOpacity style={[styles.btnMenor, {backgroundColor: '#e15554'}]}>
+                  <TouchableOpacity style={[styles.btnMenor, {backgroundColor: '#e15554'}]}
+                    onPress={excluirItensDoPedido}
+                  >
                     <Ionicons style={styles.iconBtn} name="trash-outline" size={20} color="white" />
                     <Text style={styles.txtBtn}>Excluir</Text>
                   </TouchableOpacity>
