@@ -16,6 +16,9 @@ import useDatabaseConfig from '../database/useDatabaseConfig';
 import { Mesa } from '../model/Mesa';
 import { useFonts } from 'expo-font';
 
+import { enableScreens } from 'react-native-screens';
+enableScreens();
+
 SplashScreen.preventAutoHideAsync();
 
 export default function Home() {
