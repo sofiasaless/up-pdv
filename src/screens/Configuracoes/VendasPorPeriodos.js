@@ -1,16 +1,78 @@
 import { StatusBar } from 'expo-status-bar';
 import { FlatList, KeyboardAvoidingView, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { DATA } from '../data';
+import * as SQLite from 'expo-sqlite';
 
 // componentes
 import RodapeUp from '../../components/RodapeUp';
 import ItemHistorico from '../../components/ItemHistorico';
+import DatePickerExample from '../../components/DatePickerExample';
 
 // outros imports
 import Entypo from '@expo/vector-icons/Entypo';
+import { useEffect, useState } from 'react';
+import useConvertors from '../../util/useConvertors';
+import useDatabaseConfig from '../../database/useDatabaseConfig';
+import { Pedido } from '../../model/Pedido';
 
 export default function VendasPorPeriodos() {
   const data = DATA;
+
+  // instâncias
+  const database = useDatabaseConfig();
+  const convertor = useConvertors();
+
+  // controle das datas
+  const [dataDeInicio, setDataDeInicio] = useState(new Date(new Date().getFullYear(), new Date().getMonth(), 1))
+  const [dataDeFim, setDataDeFim] = useState(new Date())
+  const setingInicio = (d) => {
+    setDataDeInicio(convertor.dateStringToDateObj(d))
+  }
+  const setingFim = (d) => {
+    setDataDeFim(convertor.dateStringToDateObj(d));
+  }
+
+  // states de controle dos pedidos
+  const [pedidos, setPedidos] = useState([])
+
+  // recuperando de acordo com as datas selecionadas
+  const recuperarPedidosPorDatas = async () => {
+    const db = await SQLite.openDatabaseAsync(database.databaseOnUse, {
+      useNewConnection: true
+    });
+    try {
+      let arrayPedidos = []
+      const allRows = await db.getAllAsync(`SELECT * FROM historicoPedidos`);
+      for (const row of allRows) {
+        // validação necessária para pegar apenas os itens de faturamento do mês atual
+        // só colocar um if else comparando as dates pelo mês
+        // vai pegar só os itens do mês e ano atual
+        if (
+          (convertor.dateStringToDateObj(row.dataDoPedido).getMonth() === new Date().getMonth())
+          &&
+          (convertor.dateStringToDateObj(row.dataDoPedido).getFullYear() === new Date().getFullYear())
+        ) {
+          arrayPedidos = arrayPedidos.concat(JSON.parse(row.pedidos))
+        }
+      }
+
+      // console.log('pedidos do mes')
+      // console.log(arrayPedidos)
+      setPedidos(arrayPedidos);
+      // console.log(pedidos)
+      
+    } catch (error) {
+      console.log('erro ao tentar buscar dados de historico', error)
+    } finally {
+      db.closeAsync()
+    }
+  }
+
+  useEffect(() => {
+    recuperarPedidosPorDatas();
+  },[])
+
+  var total = 0
 
   return (
     <KeyboardAvoidingView
@@ -27,7 +89,12 @@ export default function VendasPorPeriodos() {
 
             <View style={styles.viewInterna}>
               <TouchableOpacity style={styles.btnData}>
-                <Text style={styles.txtData}>01/11/2024</Text>
+                {/* <Text style={styles.txtData}>01/11/2024</Text> */}
+                <DatePickerExample
+                  title={dataDeInicio.toLocaleDateString()}
+                  setingDate={setingInicio}
+                  fontSize={15}
+                />
               </TouchableOpacity>
 
               <Text 
@@ -42,7 +109,12 @@ export default function VendasPorPeriodos() {
               </Text>
 
               <TouchableOpacity style={styles.btnData}>
-                <Text style={styles.txtData}>26/11/2024</Text>
+                {/* <Text style={styles.txtData}>26/11/2024</Text> */}
+                <DatePickerExample
+                  title={dataDeFim.toLocaleDateString()}
+                  setingDate={setingFim}
+                  fontSize={15}
+                />
               </TouchableOpacity>
 
               <TouchableOpacity style={styles.btnData}>
@@ -61,8 +133,8 @@ export default function VendasPorPeriodos() {
             <View style={{height: '80%'}}>
               <FlatList
                 style={styles.lista}
-                data={data}
-                renderItem={({item}) => <ItemHistorico descricao={item.descricao} quantidade={item.quantidade} precoUni={item.precoUni} />}
+                data={pedidos}
+                renderItem={({item}) => <ItemHistorico descricao={item.descricao} quantidade={item.quantidade} precoUni={item.preco} />}
                 keyExtractor={item => Math.random()}
               />
             </View>
@@ -73,7 +145,17 @@ export default function VendasPorPeriodos() {
               >Total</Text>
               <Text 
                 style={{fontSize: 24, fontWeight: 'bold'}} 
-              >R$ 55,90</Text>
+              >
+                {
+                  (pedidos == null)?
+                  ''
+                  :
+                  pedidos.map((p) => {
+                    total += p.total;
+                  })
+                }
+                R$ {total.toFixed(2)}
+              </Text>
             </View>
 
             <TouchableOpacity style={styles.btnCompartilhar}>
