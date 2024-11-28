@@ -1,13 +1,56 @@
 import { StatusBar } from 'expo-status-bar';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import * as SQLite from 'expo-sqlite';
+
 // componentes
 import RodapeUp from '../../components/RodapeUp';
 import CardEditarMesa from '../../components/CardEditarMesa';
 
 // outros imports
+import useDatabaseConfig from '../../database/useDatabaseConfig';
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback, useState } from 'react';
+import { Mesa } from '../../model/Mesa';
 
 export default function EditarMesas() {
+
+  const db = useDatabaseConfig();
+
+  // state para guardar as mesas
+  const [mesas, setMesas] = useState([]);
+
+  const recuperarMesas = async () => {
+    const database = await SQLite.openDatabaseAsync(db.databaseOnUse, {
+      useNewConnection: true
+    });
+
+    // console.log('na funcao de recuperar')
+    try {
+      const allRows = await database.getAllAsync('SELECT * FROM mesas');
+
+      setMesas([])
+      let arrayMesas = []
+      for (const row of allRows) {
+        arrayMesas.push(new Mesa(row.id, row.status, row.pedidos));
+      }
+
+      setMesas(arrayMesas);
+
+      // console.log('mesas recuperadas com sucesso: ', mesas)
+    } catch (error) {
+      console.log('erro ao recuperar as mesas: ', error)
+      setMesas([])
+    } finally {
+      database.closeAsync();
+    }
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      recuperarMesas();
+    },[])
+  );
 
   return (
     <KeyboardAvoidingView
@@ -21,11 +64,11 @@ export default function EditarMesas() {
             showsVerticalScrollIndicator={false}
           >
             <View style={styles.mesasContainer}>
-              <CardEditarMesa />
-              <CardEditarMesa />
-              <CardEditarMesa />
-              <CardEditarMesa />
-              <CardEditarMesa />
+              {
+                mesas.map((m) => (
+                  <CardEditarMesa key={m.id} id={m.id} reload={recuperarMesas} />
+                ))
+              }
             </View>
           </ScrollView>
           

@@ -217,10 +217,10 @@ export default function ResumoConta( { route } ) {
                   onPress={async () => {
                     await db.criarHistorico(id, JSON.stringify(pedidos), new Date().toLocaleDateString())
                     // await db.criarHistorico(id, JSON.stringify(pedidos), '23/11/2024')
-                    // await db.fecharMesa(id).then(() => {
-                    //   Alert.alert('Encerramento', 'Conta da mesa encerrada com sucesso!');
-                    //   navigator.goBack();
-                    // });
+                    await db.fecharMesa(id).then(() => {
+                      Alert.alert('Encerramento', 'Conta da mesa encerrada com sucesso!');
+                      navigator.goBack();
+                    });
                   }}
                 >
                   <FontAwesome5 style={[styles.iconBtn]} name="money-bill-alt" size={20} color="white" />

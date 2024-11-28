@@ -46,6 +46,29 @@ export default function useDatabaseConfig() {
 
   }
 
+  async function removerMesa(id) {
+    const db = await SQLite.openDatabaseAsync(databaseOnUse, {
+      useNewConnection: true
+    });
+
+    const statement = await db.prepareAsync(
+      'DELETE FROM mesas WHERE id = $id'
+    );
+    
+    try {
+      let result = await statement.executeAsync(
+        { $id: id }
+      );
+      console.log('nova deleção:', result, result.changes);  
+    } catch (error) {
+      console.log('erro ao deletar ', error)
+    } finally {
+      await statement.finalizeAsync();
+      await db.closeAsync();
+      console.log(id + ' - removido com sucesso');
+    }
+  }
+
   // quando encerrar a conta essa função vai ser acionada com posteriores mudanças
   async function fecharMesa(id) {
     const db = await SQLite.openDatabaseAsync(databaseOnUse, {
@@ -290,6 +313,7 @@ export default function useDatabaseConfig() {
   return { 
     databaseOnUse,
     criarNovaMesa,
+    removerMesa,
     verMesas,
     drop,
     fecharMesa,
