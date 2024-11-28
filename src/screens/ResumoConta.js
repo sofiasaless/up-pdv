@@ -51,16 +51,24 @@ export default function ResumoConta( { route } ) {
 
   // selecionando itens do pedido para manipulação
   const [itensSelecionados, setItensSelecionados] = useState([])
+  const [itensSelecionadosTransferencia, setItensSelecionadosTransferencia] = useState([])
   
   // apagando itens do pedido
-  const selecionadosPorCheck = (id, action) => {
+  const selecionadosPorCheck = (id, pedido, action) => {
     if (!action) {
       let arraySelecionados = itensSelecionados;
       arraySelecionados.push(id);
       setItensSelecionados(arraySelecionados);
+
+      let arraySelecionadosPedidos = itensSelecionadosTransferencia;
+      arraySelecionadosPedidos.push(pedido);
+      setItensSelecionadosTransferencia(arraySelecionadosPedidos);
     } else { // se for true tem que tirar o id da lista pq ele não tá mais selecionado
       let index = itensSelecionados.find(e => e === id);
       itensSelecionados.splice(index, 1);
+
+      let indexP = itensSelecionadosTransferencia.findIndex(pedi => pedi.id === id)
+      itensSelecionadosTransferencia.splice(indexP, 1);
     }
 
     // console.log('itens que foram selecionados')
@@ -220,7 +228,10 @@ export default function ResumoConta( { route } ) {
                 <View style={styles.btnView}>
                   <TouchableOpacity style={[styles.btnMenor, {backgroundColor: '#3bb273'}]}
                     onPress={() => {
-
+                      navigator.navigate('AreaTransferencia', {
+                        pedidos: itensSelecionadosTransferencia,
+                        mesaOrigem: id
+                      })
                     }}
                   >
                     <MaterialIcons style={styles.iconBtn} name="move-down" size={20} color="white" />

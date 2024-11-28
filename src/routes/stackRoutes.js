@@ -13,6 +13,7 @@ import EditarMesas from '../screens/Configuracoes/EditarMesas';
 import EditarCardapio from '../screens/Configuracoes/EditarCardapio';
 import VendasDoDia from '../screens/Configuracoes/VendasDoDia';
 import VendasPorPeriodos from '../screens/Configuracoes/VendasPorPeriodos';
+import AreaTransferencia from '../screens/AreaTransferencia';
 
 export default function AllRoutes() {
   return (
@@ -107,6 +108,17 @@ export default function AllRoutes() {
         }}
       />
 
+      <Stack.Screen
+        name="AreaTransferencia"
+        component={AreaTransferencia}
+        options={{
+          title: 'Transferir para mesa',
+          headerStyle: {
+            backgroundColor: '#1d3461',
+          },
+          headerTintColor: 'white',
+        }}
+      />
 
     </Stack.Navigator>
   );

@@ -1,6 +1,7 @@
 import Checkbox from 'expo-checkbox';
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { Pedido } from '../model/Pedido';
 
 export default function ItemPedido({ id, quantidade, descricao, precoUni, total, onCheck }) {
   const [isChecked, setChecked] = useState(false);
@@ -9,7 +10,7 @@ export default function ItemPedido({ id, quantidade, descricao, precoUni, total,
     setChecked(!isChecked)
     // console.log(id);
     // console.log(isChecked);
-    onCheck(id, isChecked);
+    onCheck(id, new Pedido(id, descricao, precoUni, quantidade, total), isChecked);
   }
 
   return (

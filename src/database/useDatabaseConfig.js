@@ -101,8 +101,7 @@ export default function useDatabaseConfig() {
   }
 
   // atualizando pedidos de uma mesa
-  async function atualizarPedidos(id, pedidos) {
-    // console.log(id, pedidos)
+  async function atualizarPedidos(id, pedidos) {    
     // console.log(typeof pedidos)
     const db = await SQLite.openDatabaseAsync(databaseOnUse, {
       useNewConnection: true
@@ -120,6 +119,11 @@ export default function useDatabaseConfig() {
           $id: id,
         }
       );
+
+      if (pedidos === '[]') {
+        await fecharMesa(id)
+      }
+
       console.log('nova atualização:', result, result.changes); 
     } catch (error) {
       console.log('erro ao atualizar pedidos da mesa ', error);
