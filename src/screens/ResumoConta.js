@@ -10,7 +10,6 @@ import RodapeUp from '../components/RodapeUp';
 import ItemPedido from '../components/ItemPedido';
 
 // imports além
-import { DATA } from './data';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
@@ -45,6 +44,47 @@ export default function ResumoConta( { route } ) {
       db.atualizarPedidos(id, JSON.stringify(pedidos));
     } catch (error) {
       console.log('erro ao atualizar mesa: ', error);
+    } finally {
+      recuperarDadosDaMesa();
+    }
+  }
+
+  // selecionando itens do pedido para manipulação
+  const [itensSelecionados, setItensSelecionados] = useState([])
+  
+  // apagando itens do pedido
+  const selecionadosPorCheck = (id, action) => {
+    if (!action) {
+      let arraySelecionados = itensSelecionados;
+      arraySelecionados.push(id);
+      setItensSelecionados(arraySelecionados);
+    } else { // se for true tem que tirar o id da lista pq ele não tá mais selecionado
+      let index = itensSelecionados.find(e => e === id);
+      itensSelecionados.splice(index, 1);
+    }
+
+    // console.log('itens que foram selecionados')
+    // console.log(itensSelecionados)
+  }
+
+  const excluirItensDoPedido = () => {
+    // colocar um alert caso ele nao tenha selecionado nenhum item
+
+    // percorrendo os pedidos e tirando
+    let arrayPedidos = pedidos
+    pedidos.forEach((p, indice) => {
+      itensSelecionados.forEach((i) => {
+        if (p.id === i) {
+          arrayPedidos.splice(indice, 1);
+        }
+      })
+    })
+
+    // atualizando a mesa no banco de dados
+    try {
+      db.atualizarPedidos(id, JSON.stringify(arrayPedidos));
+    } catch (error) {
+      console.log('erro ao atualizar mesa com itens deletados ', error);
     } finally {
       recuperarDadosDaMesa();
     }
@@ -158,7 +198,7 @@ export default function ResumoConta( { route } ) {
                   style={styles.containerPedidos}
                   data={pedidos}
                   renderItem={({item}) => 
-                    <ItemPedido quantidade={item.quantidade} descricao={item.descricao} precoUni={item.preco} total={item.total} />
+                    <ItemPedido id={item.id} quantidade={item.quantidade} descricao={item.descricao} precoUni={item.preco} total={item.total} onCheck={selecionadosPorCheck} />
                   }
                   keyExtractor={item => Math.random()}
                 />
@@ -178,12 +218,18 @@ export default function ResumoConta( { route } ) {
                 </TouchableOpacity>
 
                 <View style={styles.btnView}>
-                  <TouchableOpacity style={[styles.btnMenor, {backgroundColor: '#3bb273'}]}>
+                  <TouchableOpacity style={[styles.btnMenor, {backgroundColor: '#3bb273'}]}
+                    onPress={() => {
+
+                    }}
+                  >
                     <MaterialIcons style={styles.iconBtn} name="move-down" size={20} color="white" />
                     <Text style={styles.txtBtn}>Transferir</Text>
                   </TouchableOpacity>
 
-                  <TouchableOpacity style={[styles.btnMenor, {backgroundColor: '#e15554'}]}>
+                  <TouchableOpacity style={[styles.btnMenor, {backgroundColor: '#e15554'}]}
+                    onPress={excluirItensDoPedido}
+                  >
                     <Ionicons style={styles.iconBtn} name="trash-outline" size={20} color="white" />
                     <Text style={styles.txtBtn}>Excluir</Text>
                   </TouchableOpacity>

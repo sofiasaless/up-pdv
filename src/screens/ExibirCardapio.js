@@ -13,6 +13,7 @@ import ItemCardapio from '../components/ItemCardapio';
 import * as SQLite from 'expo-sqlite';
 import useDatabaseConfig from '../database/useDatabaseConfig';
 import { Pedido } from '../model/Pedido';
+import { useNavigation } from '@react-navigation/native';
 
 export default function ExibirConta( { route } ) {
 
@@ -20,6 +21,7 @@ export default function ExibirConta( { route } ) {
   const id = route.params.idMesa;
 
   // instâncias
+  const navigator = useNavigation();
   const database = useDatabaseConfig();
 
   // states de controle
@@ -66,7 +68,7 @@ export default function ExibirConta( { route } ) {
       // console.log(arrayDePedidos)
       // console.log(JSON.stringify(arrayDePedidos));
       database.atualizarPedidos(id, JSON.stringify(arrayDePedidos));
-      
+      navigator.goBack();
     } catch (error) {
       console.log('erro ao confirmar pedidos no cardapio ', error)
     } finally {
@@ -85,7 +87,7 @@ export default function ExibirConta( { route } ) {
       const allRows = await db.getAllAsync('SELECT * FROM cardapio');
       let arrayProdutos = [];
       for (const row of allRows) {
-        arrayProdutos.push(new Pedido(row.id, row.descricao, row.preco, 1))
+        arrayProdutos.push(new Pedido(Math.random(), row.descricao, row.preco, 1))
       }
       setProdutos(arrayProdutos);
       setProdutosFiltrados(arrayProdutos);

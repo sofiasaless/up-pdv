@@ -2,15 +2,22 @@ import Checkbox from 'expo-checkbox';
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-export default function ItemPedido({ quantidade, descricao, precoUni, total }) {
+export default function ItemPedido({ id, quantidade, descricao, precoUni, total, onCheck }) {
   const [isChecked, setChecked] = useState(false);
+
+  const checking = () => {
+    setChecked(!isChecked)
+    // console.log(id);
+    // console.log(isChecked);
+    onCheck(id, isChecked);
+  }
 
   return (
     <View style={styles.container}>
       <Checkbox
         style={styles.checkbox}
         value={isChecked}
-        onValueChange={setChecked}
+        onValueChange={checking}
         color={'#247ba0'}
       />
       <View style={styles.txtInterno}>
