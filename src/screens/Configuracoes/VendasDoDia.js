@@ -8,9 +8,29 @@ import ItemHistorico from '../../components/ItemHistorico';
 
 // outros imports
 import Entypo from '@expo/vector-icons/Entypo';
+import useDatabaseConfig from '../../database/useDatabaseConfig';
+import { useEffect, useState } from 'react';
 
 export default function VendasDoDia() {
   const data = DATA;
+
+  const db = useDatabaseConfig();
+
+  const [pedidosDoDia, setPedidosDoDia] = useState([])
+
+  const recuperandoPedidos = async () => {
+    await db.recuperarHistoricoDoDia().then((response) => {
+      // console.log('resposta do banco')
+      // console.log(response)
+      setPedidosDoDia(response);
+    })
+  }
+
+  useEffect(() => {
+    recuperandoPedidos();
+  },[])
+
+  var total = 0
 
   return (
     <KeyboardAvoidingView
@@ -28,8 +48,8 @@ export default function VendasDoDia() {
             <View style={{height: '80%'}}>
               <FlatList
                 style={styles.lista}
-                data={data}
-                renderItem={({item}) => <ItemHistorico descricao={item.descricao} quantidade={item.quantidade} precoUni={item.precoUni} />}
+                data={pedidosDoDia}
+                renderItem={({item}) => <ItemHistorico descricao={item.descricao} quantidade={item.quantidade} precoUni={item.preco} />}
                 keyExtractor={item => Math.random()}
               />
             </View>
@@ -40,10 +60,25 @@ export default function VendasDoDia() {
               >Total</Text>
               <Text 
                 style={{fontSize: 24, fontWeight: 'bold'}} 
-              >R$ 55,90</Text>
+              >
+                {
+                  (pedidosDoDia === null)?
+                  ''
+                  :
+                  pedidosDoDia.map((p) => {
+                    total += p.total;
+                  })
+                }
+                R$ {total.toFixed(2)}
+              </Text>
             </View>
 
-            <TouchableOpacity style={styles.btnCompartilhar}>
+            <TouchableOpacity style={styles.btnCompartilhar}
+              onPress={() => {
+                console.log(pedidosDoDia)
+                // db.recuperarHistoricoDoDia();
+              }}
+            >
               <Text style={styles.txtCompartilhar}>Compartilhar</Text>
               <Entypo name="share-alternative" size={20} color="black" />
             </TouchableOpacity>

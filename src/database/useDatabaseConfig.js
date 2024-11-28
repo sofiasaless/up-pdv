@@ -218,6 +218,75 @@ export default function useDatabaseConfig() {
     db.closeAsync();
   }
 
+  // configurações de histórico
+  async function criarHistorico(idMesa, pedidos, dataDoPedido) {
+    const db = await SQLite.openDatabaseAsync(databaseOnUse, {
+      useNewConnection: true
+    });
+
+    try {
+      await db.execAsync(`
+        PRAGMA foreign_keys = ON;
+        CREATE TABLE IF NOT EXISTS historicoPedidos 
+        (
+          id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
+          idMesaOrigem INTEGER REFERENCES mesas (id) NOT NULL,          
+          pedidos TEXT NOT NULL,
+          dataDoPedido TEXT NOT NULL
+        );
+      `);
+  
+      console.log('tabela de historico criada com sucesso');
+  
+      // agora inserindo uma nova mesa na tabela
+      await db.runAsync(
+        `INSERT INTO historicoPedidos (pedidos, idMesaOrigem, dataDoPedido) VALUES ('${pedidos}', ${idMesa}, '${dataDoPedido}')`
+      );
+  
+    } catch (error) {
+      console.log('erro ao inserir no histórico ', error);
+    } finally {
+      // fechando bd
+      db.closeAsync();
+    }
+  }
+
+  async function verHistorico() {
+    const db = await SQLite.openDatabaseAsync(databaseOnUse, {
+      useNewConnection: true
+    });
+
+    const allRows = await db.getAllAsync('SELECT * FROM historicoPedidos');
+    for (const row of allRows) {
+      console.log(row.id, row.pedidos, row.dataDoPedido, row.idMesaOrigem);
+    }
+    
+    db.closeAsync();
+  }
+
+  async function recuperarHistoricoDoDia () {
+    const db = await SQLite.openDatabaseAsync(databaseOnUse, {
+      useNewConnection: true,
+    });
+
+    return new Promise(async function (resolve, reject) {
+      let arrayPedidosDoDia = []
+      const allRows = await db.getAllAsync(`SELECT * FROM historicoPedidos WHERE dataDoPedido = "${new Date().toLocaleDateString()}"`);
+      
+      for(const row of allRows) {
+        // console.log(row.id, row.pedidos)
+        arrayPedidosDoDia = arrayPedidosDoDia.concat(JSON.parse(row.pedidos));
+      }
+
+      // console.log('conteudo do dia')
+      // console.log(arrayPedidosDoDia)
+
+      // resolve(allRows)
+      resolve(arrayPedidosDoDia)
+      db.closeAsync();
+    })
+  }
+
   return { 
     databaseOnUse,
     criarNovaMesa,
@@ -227,7 +296,10 @@ export default function useDatabaseConfig() {
     abrirMesa,
     atualizarPedidos,
     recuperarMesaPorId,
-    verCardapio
+    verCardapio,
+    verHistorico,
+    criarHistorico,
+    recuperarHistoricoDoDia
   }
 
 }

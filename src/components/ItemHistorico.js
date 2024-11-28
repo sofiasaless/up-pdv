@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-export default function ItemPedido({ quantidade, descricao, precoUni }) {
+export default function ItemPedido({ quantidade, descricao, precoUni, total }) {
 
   return (
     <View style={styles.container}>
