@@ -1,10 +1,14 @@
 import * as SQLite from 'expo-sqlite';
 import { itensDoCardapioEmLinhaDeInsercao } from './cardapio/itensCardapio';
+import useConvertors from '../util/useConvertors';
 
 export default function useDatabaseConfig() {
 
   // produtos do cardapio
   const produtos = itensDoCardapioEmLinhaDeInsercao;
+
+  // util para conversão de datas
+  const convertor = useConvertors();
 
   // variável com nome do banco de dados em uso, também coloquei ela pra exportar, vai ficar mais prático pra abrir o banco
   const databaseOnUse = 'cantinhoDB';
@@ -354,6 +358,51 @@ export default function useDatabaseConfig() {
     })
   }
 
+  async function recuperarHistoricoDoPeriodo(dataInicio, dataFim) {
+    const db = await SQLite.openDatabaseAsync(databaseOnUse, {
+      useNewConnection: true
+    });
+    
+    let pedidosArray = []
+    if (dataFim < dataInicio) {
+      return [];
+    }
+
+    return new Promise(async function (resolve, reject) {
+      try {
+        const allRows = await db.getAllAsync(`SELECT * FROM historicoPedidos`);
+
+        // filtrando as datas 
+        for (const row of allRows) {
+          let dataConvertida = convertor.dateStringToDateObj(row.dataDoPedido);
+
+          // se for igual a data de inicio ou data de fim, entao vai mostrar
+          if (
+            (dataConvertida.getTime() == dataInicio.getTime()) 
+            ||
+            (dataConvertida.getTime() == dataFim.getTime())
+          ) {
+            pedidosArray = pedidosArray.concat(JSON.parse(row.pedidos))
+          } 
+          // ou se for maior que a dataInicio e menor que a dataFim
+          else if ((dataConvertida > dataInicio) && (dataConvertida < dataFim)) { 
+            pedidosArray = pedidosArray.concat(JSON.parse(row.pedidos))
+          }
+        }
+
+        // console.log('pedidos filtrados ')
+        // console.log(pedidosArray)
+        resolve(pedidosArray);
+      } catch (error) {
+        console.log('erro ao tentar buscar pedidos filtrados do historico')
+        resolve([])
+      } finally {
+        db.closeAsync()
+      }
+    })
+    
+  }
+
   return { 
     databaseOnUse,
     criarNovaMesa,
@@ -369,7 +418,8 @@ export default function useDatabaseConfig() {
     criarHistorico,
     recuperarHistoricoDoDia,
     adicionarNoCardapio,
-    removerProduto
+    removerProduto,
+    recuperarHistoricoDoPeriodo
   }
 
 }

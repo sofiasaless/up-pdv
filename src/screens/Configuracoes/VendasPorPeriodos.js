@@ -117,11 +117,23 @@ export default function VendasPorPeriodos() {
                 />
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.btnData}>
+              <TouchableOpacity style={styles.btnData}
+                onPress={async () => {
+                  database.recuperarHistoricoDoPeriodo(dataDeInicio, dataDeFim).then((res) => {
+                    setPedidos(res);
+                  });
+                }}
+              >
                 <Text style={styles.txtData}>Filtrar</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.btnResetar}>
+              <TouchableOpacity style={styles.btnResetar}
+                onPress={() => {
+                  setDataDeFim(new Date())
+                  setDataDeInicio(new Date(new Date().getFullYear(), new Date().getMonth(), 1))
+                  recuperarPedidosPorDatas();
+                }}
+              >
                 <Text style={styles.txtResetar}>Resetar</Text>
               </TouchableOpacity>
             </View>
