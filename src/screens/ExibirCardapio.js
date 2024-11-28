@@ -147,7 +147,10 @@ export default function ExibirConta( { route } ) {
                   style={{
                     color: 'white',
                     fontSize: 20,
-                    padding: 13
+                    padding: 13,
+                    fontFamily: 'Barlow-Medium',
+                    textAlign: 'center',
+                    textAlignVertical: 'center'
                   }}
                 >
                   Adicionar

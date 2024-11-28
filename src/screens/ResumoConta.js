@@ -124,16 +124,16 @@ export default function ResumoConta( { route } ) {
         <View style={styles.containerIntroducao}>
           <View style={styles.containerTxtMesa}>
             <View>
-              <Text style={{color: 'white', fontSize: 40, fontWeight: 'bold'}}>MESA {id}</Text>
+              <Text style={{color: 'white', fontSize: 40, fontFamily: 'Barlow-Medium'}}>MESA {id}</Text>
             </View>
           </View>
 
           <View style={styles.containerTotal}>
             <Text 
-              style={{flex: 1, fontSize: 24, fontWeight: 'bold'}}
+              style={{flex: 1, fontSize: 24, fontFamily: 'Barlow-Medium'}}
             >Total</Text>
             <Text 
-              style={{fontSize: 24, fontWeight: 'bold'}} 
+              style={{fontSize: 24, fontFamily: 'Barlow-Medium'}} 
             > 
               {
                 (pedidos === null)?
@@ -150,7 +150,7 @@ export default function ResumoConta( { route } ) {
         
         <View style={styles.content}>
           <View style={styles.formProduto}>
-            <Text style={{textAlign: 'center', fontSize: 20, fontWeight: 'bold'}}>Produto</Text>
+            <Text style={{textAlign: 'center', fontSize: 20, fontFamily: 'Barlow-Bold'}}>Produto</Text>
             <TextInput 
               style={styles.inputProduto}
               placeholder='Nome do produto'
@@ -181,13 +181,13 @@ export default function ResumoConta( { route } ) {
                 style={styles.btnAdicionar}
                 onPress={adicionarNoPedidoForaCardapio}
               >
-                <Text style={{textAlign: 'center', color: 'white', fontWeight: 'bold', fontSize: 18}}>Adicionar</Text>
+                <Text style={{textAlign: 'center', color: 'white', fontFamily: 'Barlow-Bold', fontSize: 18}}>Adicionar</Text>
               </TouchableOpacity>
             </View>
           </View>
 
           <View>
-            <Text style={{textAlign: 'center', fontSize: 20, fontWeight: 'bold', marginVertical: 10}}>Cardápio</Text>
+            <Text style={{textAlign: 'center', fontSize: 20, fontFamily: 'Barlow-Bold', marginVertical: 10}}>Cardápio</Text>
             <TouchableOpacity
               style={styles.btnSelecionarProduto}
               onPress={() => {
@@ -196,7 +196,7 @@ export default function ResumoConta( { route } ) {
                 })
               }}
             >
-              <Text style={{textAlign: 'center', fontSize: 20, fontWeight: 'bold', marginVertical: 10, color: 'white'}}>+   Selecionar produto</Text>
+              <Text style={{textAlign: 'center', fontSize: 20, fontFamily: 'Barlow-Medium', marginVertical: 10, color: 'white'}}>+   Selecionar produto</Text>
             </TouchableOpacity>
 
             {/* lista de pedidos da mesa, essa view precisa ter uma altura precisa, ou na vdd vai ser uma flatlist */}
@@ -215,6 +215,8 @@ export default function ResumoConta( { route } ) {
               <View style={styles.btnDeConta}>
                 <TouchableOpacity style={[styles.btnEncerrar, {backgroundColor: '#1d3461'}]}
                   onPress={async () => {
+                    await db.criarHistorico(id, JSON.stringify(pedidos), new Date().toLocaleDateString())
+                    // await db.criarHistorico(id, JSON.stringify(pedidos), '23/11/2024')
                     await db.fecharMesa(id).then(() => {
                       Alert.alert('Encerramento', 'Conta da mesa encerrada com sucesso!');
                       navigator.goBack();
@@ -306,6 +308,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     color: 'white',
+    fontFamily: 'Barlow-Medium'
   },
   formViewInterna: {
     display: 'flex',
@@ -320,7 +323,8 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     color: 'white',
-    flex: 1
+    flex: 1,
+    fontFamily: 'Barlow-Medium'
   },
   btnAdicionar: {
     width: 'auto',
@@ -339,6 +343,7 @@ const styles = StyleSheet.create({
   txtBtn: {
     color: 'white',
     fontSize: 17,
+    fontFamily: 'Barlow-Bold'
   },
   containerPedidos: {
     height: '45%'

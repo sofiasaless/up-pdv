@@ -24,7 +24,8 @@ export default function ItemPedido({ id, quantidade, descricao, precoUni, total,
       <View style={styles.txtInterno}>
         <Text 
           style={{
-            marginHorizontal: 15, 
+            marginHorizontal: 15,
+            fontFamily: 'Barlow-Bold' 
           }}
         >
           {quantidade}
@@ -35,6 +36,7 @@ export default function ItemPedido({ id, quantidade, descricao, precoUni, total,
               width: '50%',
               textAlign: 'left',
               // backgroundColor: 'blue'
+              fontFamily: 'Barlow-Medium'
             }
           }
         >
@@ -44,24 +46,26 @@ export default function ItemPedido({ id, quantidade, descricao, precoUni, total,
           style={
             {
               flex: 0.5,
-              textAlign: 'center',
-              color: '#737373'
+              textAlign: 'left',
+              color: '#737373',
+              fontFamily: 'Barlow-Medium'
               // backgroundColor: 'green'
             }
           }
         >
-          {precoUni}
+          R$ {precoUni} (U)
         </Text>
         <Text 
           style={
             {
               flex: 0.5,
-              textAlign: 'center', 
+              textAlign: 'center',
+              fontFamily: 'Barlow-Medium'
               // backgroundColor: 'red'
             }
           }
         >
-          R$ {total}
+          R$ {total.toFixed(2)}
         </Text>
       </View>
     </View>

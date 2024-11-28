@@ -43,5 +43,6 @@ const styles = StyleSheet.create({
   input: {
     width: '90%',
     color: 'white',
+    fontFamily: 'Barlow-Medium'
   }
 });

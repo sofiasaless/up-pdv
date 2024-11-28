@@ -1,10 +1,14 @@
 import * as SQLite from 'expo-sqlite';
 import { itensDoCardapioEmLinhaDeInsercao } from './cardapio/itensCardapio';
+import useConvertors from '../util/useConvertors';
 
 export default function useDatabaseConfig() {
 
   // produtos do cardapio
   const produtos = itensDoCardapioEmLinhaDeInsercao;
+
+  // util para conversão de datas
+  const convertor = useConvertors();
 
   // variável com nome do banco de dados em uso, também coloquei ela pra exportar, vai ficar mais prático pra abrir o banco
   const databaseOnUse = 'cantinhoDB';
@@ -44,6 +48,29 @@ export default function useDatabaseConfig() {
       db.closeAsync();
     }
 
+  }
+
+  async function removerMesa(id) {
+    const db = await SQLite.openDatabaseAsync(databaseOnUse, {
+      useNewConnection: true
+    });
+
+    const statement = await db.prepareAsync(
+      'DELETE FROM mesas WHERE id = $id'
+    );
+    
+    try {
+      let result = await statement.executeAsync(
+        { $id: id }
+      );
+      console.log('nova deleção:', result, result.changes);  
+    } catch (error) {
+      console.log('erro ao deletar ', error)
+    } finally {
+      await statement.finalizeAsync();
+      await db.closeAsync();
+      console.log(id + ' - removido com sucesso');
+    }
   }
 
   // quando encerrar a conta essa função vai ser acionada com posteriores mudanças
@@ -205,6 +232,50 @@ export default function useDatabaseConfig() {
 
   }
 
+  async function adicionarNoCardapio(descricao, preco) {
+    const db = await SQLite.openDatabaseAsync(databaseOnUse, {
+      useNewConnection: true
+    });
+
+    try {
+      await db.runAsync(
+        'INSERT INTO cardapio (descricao, preco, quantidade) VALUES (?, ?, ?)',
+        descricao,
+        preco,
+        1
+      );
+
+      console.log('novo produto cadastrado com sucesso')
+    } catch (error) {
+      console.log('erro ao cadastrar novo produto no cardapio ' + error)
+    } finally {
+      db.closeAsync();
+    }
+  }
+
+  async function removerProduto(id) {
+    const db = await SQLite.openDatabaseAsync(databaseOnUse, {
+      useNewConnection: true
+    });
+
+    const statement = await db.prepareAsync(
+      'DELETE FROM cardapio WHERE id = $id'
+    );
+    
+    try {
+      let result = await statement.executeAsync(
+        { $id: id }
+      );
+      console.log('nova deleção no cardapio', result, result.changes);  
+    } catch (error) {
+      console.log('erro ao deletar ', error)
+    } finally {
+      await statement.finalizeAsync();
+      await db.closeAsync();
+      console.log(id + ' - removido com sucesso');
+    }
+  }
+
   async function verCardapio() {
     const db = await SQLite.openDatabaseAsync(databaseOnUse, {
       useNewConnection: true
@@ -218,16 +289,137 @@ export default function useDatabaseConfig() {
     db.closeAsync();
   }
 
+  // configurações de histórico
+  async function criarHistorico(idMesa, pedidos, dataDoPedido) {
+    const db = await SQLite.openDatabaseAsync(databaseOnUse, {
+      useNewConnection: true
+    });
+
+    try {
+      await db.execAsync(`
+        PRAGMA foreign_keys = ON;
+        CREATE TABLE IF NOT EXISTS historicoPedidos 
+        (
+          id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
+          idMesaOrigem INTEGER REFERENCES mesas (id) NOT NULL,          
+          pedidos TEXT NOT NULL,
+          dataDoPedido TEXT NOT NULL
+        );
+      `);
+  
+      console.log('tabela de historico criada com sucesso');
+  
+      // agora inserindo uma nova mesa na tabela
+      await db.runAsync(
+        `INSERT INTO historicoPedidos (pedidos, idMesaOrigem, dataDoPedido) VALUES ('${pedidos}', ${idMesa}, '${dataDoPedido}')`
+      );
+  
+    } catch (error) {
+      console.log('erro ao inserir no histórico ', error);
+    } finally {
+      // fechando bd
+      db.closeAsync();
+    }
+  }
+
+  async function verHistorico() {
+    const db = await SQLite.openDatabaseAsync(databaseOnUse, {
+      useNewConnection: true
+    });
+
+    const allRows = await db.getAllAsync('SELECT * FROM historicoPedidos');
+    for (const row of allRows) {
+      console.log(row.id, row.pedidos, row.dataDoPedido, row.idMesaOrigem);
+    }
+    
+    db.closeAsync();
+  }
+
+  async function recuperarHistoricoDoDia () {
+    const db = await SQLite.openDatabaseAsync(databaseOnUse, {
+      useNewConnection: true,
+    });
+
+    return new Promise(async function (resolve, reject) {
+      let arrayPedidosDoDia = []
+      const allRows = await db.getAllAsync(`SELECT * FROM historicoPedidos WHERE dataDoPedido = "${new Date().toLocaleDateString()}"`);
+      
+      for(const row of allRows) {
+        // console.log(row.id, row.pedidos)
+        arrayPedidosDoDia = arrayPedidosDoDia.concat(JSON.parse(row.pedidos));
+      }
+
+      // console.log('conteudo do dia')
+      // console.log(arrayPedidosDoDia)
+
+      // resolve(allRows)
+      resolve(arrayPedidosDoDia)
+      db.closeAsync();
+    })
+  }
+
+  async function recuperarHistoricoDoPeriodo(dataInicio, dataFim) {
+    const db = await SQLite.openDatabaseAsync(databaseOnUse, {
+      useNewConnection: true
+    });
+    
+    let pedidosArray = []
+    if (dataFim < dataInicio) {
+      return [];
+    }
+
+    return new Promise(async function (resolve, reject) {
+      try {
+        const allRows = await db.getAllAsync(`SELECT * FROM historicoPedidos`);
+
+        // filtrando as datas 
+        for (const row of allRows) {
+          let dataConvertida = convertor.dateStringToDateObj(row.dataDoPedido);
+
+          // se for igual a data de inicio ou data de fim, entao vai mostrar
+          if (
+            (dataConvertida.getTime() == dataInicio.getTime()) 
+            ||
+            (dataConvertida.getTime() == dataFim.getTime())
+          ) {
+            pedidosArray = pedidosArray.concat(JSON.parse(row.pedidos))
+          } 
+          // ou se for maior que a dataInicio e menor que a dataFim
+          else if ((dataConvertida > dataInicio) && (dataConvertida < dataFim)) { 
+            pedidosArray = pedidosArray.concat(JSON.parse(row.pedidos))
+          }
+        }
+
+        // console.log('pedidos filtrados ')
+        // console.log(pedidosArray)
+        resolve(pedidosArray);
+      } catch (error) {
+        console.log('erro ao tentar buscar pedidos filtrados do historico')
+        resolve([])
+      } finally {
+        db.closeAsync()
+      }
+    })
+    
+  }
+
   return { 
     databaseOnUse,
     criarNovaMesa,
+    removerMesa,
     verMesas,
     drop,
     fecharMesa,
     abrirMesa,
     atualizarPedidos,
     recuperarMesaPorId,
-    verCardapio
+    verCardapio,
+    verHistorico,
+    criarHistorico,
+    recuperarHistoricoDoDia,
+    adicionarNoCardapio,
+    removerProduto,
+    recuperarHistoricoDoPeriodo
   }
 
 }

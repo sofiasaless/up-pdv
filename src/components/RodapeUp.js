@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 export default function RodapeUp( { cor } ) {
   return (
     <View style={styles.container}>
-      <Text style={[styles.texto, {color: (cor)?'#1d3461':'#fff'}]}>Um serviço @UpBusiness</Text>
+      <Text style={[styles.texto, {color: (cor)?'#1d3461':'#fff'}]}>Um serviço @UpBusiness0</Text>
       <StatusBar style="auto" />
     </View>
   );
@@ -20,6 +20,7 @@ const styles = StyleSheet.create({
   },
   texto: {
     color: '#fff',
-    fontSize: 13
+    fontSize: 14,
+    fontFamily: 'Barlow-Bold'
   }
 });

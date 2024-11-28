@@ -39,6 +39,6 @@ const styles = StyleSheet.create({
   txtMesa: {
     padding: 20,
     fontSize: 30,
-    fontWeight: 'bold'
+    fontFamily: 'Barlow-Bold',
   }
 });

@@ -1,10 +1,17 @@
+import { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export default function ItemEditarCardapio( {descricao, precoUni} ) {
+export default function ItemEditarCardapio( {id, descricao, precoUni, controleSelecao} ) {
+  const [selecionado, setSelecionado] = useState(false)
 
   return (
-    <View style={styles.itemCardapio}>
-      <TouchableOpacity style={styles.infoItem}>
+    <View style={[styles.itemCardapio, {backgroundColor: (selecionado)?'#3b5486':'#1d3461'}]}>
+      <TouchableOpacity style={styles.infoItem}
+        onPress={() => {
+          setSelecionado(!selecionado);
+          controleSelecao(selecionado, id)
+        }}
+      >
         <Text style={styles.txtDescricao}>{descricao}</Text>
         <Text style={styles.txtPreco}>R$ {precoUni}</Text>
       </TouchableOpacity>
@@ -14,7 +21,7 @@ export default function ItemEditarCardapio( {descricao, precoUni} ) {
 
 const styles = StyleSheet.create({
   itemCardapio: {
-    backgroundColor: '#1d3461',
+    // backgroundColor: '#1d3461',
     margin: 3,
     borderRadius: 5,
     display: 'flex',
@@ -35,11 +42,13 @@ const styles = StyleSheet.create({
   txtDescricao: {
     color: 'white',
     fontSize: 18,
+    fontFamily: 'Barlow-Medium'
     // backgroundColor: 'green'
   },
   txtPreco: {
     color: 'white',
     fontSize: 18,
+    fontFamily: 'Barlow-Medium'
     // backgroundColor: 'red'
   }
 });

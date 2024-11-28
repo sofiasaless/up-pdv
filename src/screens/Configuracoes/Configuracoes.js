@@ -55,7 +55,7 @@ export default function Configuracoes() {
                 <Text style={styles.txtBackup}>Exportar</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.btnBackup} onPress={() => db.verMesas()}>
+              <TouchableOpacity style={styles.btnBackup} onPress={() => db.verHistorico()}>
                 <Text style={styles.txtBackup}>Importar</Text>
               </TouchableOpacity>
             </View>
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     textAlign: 'center',
     fontSize: 23,
-    fontWeight: 'bold'
+    fontFamily: 'Barlow-Bold'
   },
   config: {
     width: '100%',
@@ -105,7 +105,8 @@ const styles = StyleSheet.create({
   txtConfig: {
     color: 'white',
     padding: 18,
-    fontSize: 15
+    fontSize: 17,
+    fontFamily: 'Barlow-Medium'
   },
   btnBackup: {
     backgroundColor: '#fec601',
@@ -116,7 +117,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     padding: 15,
     fontSize: 18,
-    fontWeight: 'bold'
+    fontFamily: 'Barlow-Bold'
   },
   viewBackup: {
     display: 'flex',
