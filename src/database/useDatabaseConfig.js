@@ -228,6 +228,50 @@ export default function useDatabaseConfig() {
 
   }
 
+  async function adicionarNoCardapio(descricao, preco) {
+    const db = await SQLite.openDatabaseAsync(databaseOnUse, {
+      useNewConnection: true
+    });
+
+    try {
+      await db.runAsync(
+        'INSERT INTO cardapio (descricao, preco, quantidade) VALUES (?, ?, ?)',
+        descricao,
+        preco,
+        1
+      );
+
+      console.log('novo produto cadastrado com sucesso')
+    } catch (error) {
+      console.log('erro ao cadastrar novo produto no cardapio ' + error)
+    } finally {
+      db.closeAsync();
+    }
+  }
+
+  async function removerProduto(id) {
+    const db = await SQLite.openDatabaseAsync(databaseOnUse, {
+      useNewConnection: true
+    });
+
+    const statement = await db.prepareAsync(
+      'DELETE FROM cardapio WHERE id = $id'
+    );
+    
+    try {
+      let result = await statement.executeAsync(
+        { $id: id }
+      );
+      console.log('nova deleção no cardapio', result, result.changes);  
+    } catch (error) {
+      console.log('erro ao deletar ', error)
+    } finally {
+      await statement.finalizeAsync();
+      await db.closeAsync();
+      console.log(id + ' - removido com sucesso');
+    }
+  }
+
   async function verCardapio() {
     const db = await SQLite.openDatabaseAsync(databaseOnUse, {
       useNewConnection: true
@@ -323,7 +367,9 @@ export default function useDatabaseConfig() {
     verCardapio,
     verHistorico,
     criarHistorico,
-    recuperarHistoricoDoDia
+    recuperarHistoricoDoDia,
+    adicionarNoCardapio,
+    removerProduto
   }
 
 }

@@ -2,15 +2,89 @@ import { StatusBar } from 'expo-status-bar';
 import { FlatList, KeyboardAvoidingView, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { DATA } from '../data';
 import { TextInput } from 'react-native-gesture-handler';
+import { useEffect, useState } from 'react';
 
 // componentes
 import RodapeUp from '../../components/RodapeUp';
 import ItemEditarCardapio from '../../components/ItemEditarCardapio';
 
 // outros imports
+import * as SQLite from 'expo-sqlite';
+import useDatabaseConfig from '../../database/useDatabaseConfig';
+import { Pedido } from '../../model/Pedido';
 
 export default function EditarCardapio() {
   const data = DATA;
+
+  const database = useDatabaseConfig();;
+
+  // states para adição
+  const [descricao, setDescricao] = useState('')
+  const [preco, setPreco] = useState(0)
+
+  // states para controle
+  const [produtos, setProdutos] = useState([])
+  const [produtosFiltrados, setProdutosFiltrados] = useState([])
+  const [produtosEscolhidos, setProdutosEscolhidos] = useState([])
+
+  // fazendo a pesquisa
+  const pesquisarPorProduto = (text) => {
+    // console.log(text)
+    const prod = produtos.filter(item =>
+      item.descricao.toLowerCase().includes(text.toLowerCase())
+    );
+    setProdutosFiltrados(prod);
+  }
+
+  // produtos para exclusão
+  const produtosSelecionadosParaExclusao = (acao, idProd) => {
+    // console.log('o componente ta selecionado? ', acao);
+    if (!acao) {
+      let newArray = []
+      newArray = produtosEscolhidos
+      newArray.push(idProd);
+      setProdutosEscolhidos(newArray);
+    } else {
+      let index = produtosEscolhidos.findIndex(prod => prod === idProd);
+      produtosEscolhidos.splice(index, 1);
+    }
+
+    // console.log('array com id de produtos escolhidos')
+    // console.log(produtosEscolhidos)
+  }
+
+  const excluindoProdutosSelecionados = () => {
+    produtosEscolhidos.forEach(async (p) => {
+      await database.removerProduto(p);
+    });
+
+    recuperarProdutos();
+  }
+
+  const recuperarProdutos = async () => {
+    const db = await SQLite.openDatabaseAsync(database.databaseOnUse, {
+      useNewConnection: true
+    });
+
+    try {
+      const allRows = await db.getAllAsync('SELECT * FROM cardapio');
+      let arrayProdutos = [];
+      for (const row of allRows) {
+        arrayProdutos.push(new Pedido(row.id, row.descricao, row.preco, 1))
+      }
+      setProdutos(arrayProdutos);
+      setProdutosFiltrados(arrayProdutos);
+
+    } catch (error) {
+      console.log('deu erro tentando recuperar os produtos: ', error)
+    } finally {
+      db.closeAsync();
+    }
+  }
+
+  useEffect(() => {
+    recuperarProdutos();
+  }, [])
 
   return (
     <KeyboardAvoidingView
@@ -29,6 +103,7 @@ export default function EditarCardapio() {
               placeholderTextColor={'#d9d9d9'}
               cursorColor={'white'}
               keyboardType='default'
+              onChangeText={setDescricao}
             />
 
             <View style={{display: 'flex', flexDirection: 'row', gap: 5}}>
@@ -38,9 +113,15 @@ export default function EditarCardapio() {
                 placeholderTextColor={'#d9d9d9'}
                 cursorColor={'white'}
                 keyboardType='default'
+                onChangeText={setPreco}
               />
 
-              <TouchableOpacity style={styles.btnAdc}>
+              <TouchableOpacity style={styles.btnAdc}
+                onPress={async () => {
+                  await database.adicionarNoCardapio(descricao, Number(preco));
+                  recuperarProdutos();
+                }}
+              >
                 <Text style={styles.txtBtn}>Adicionar</Text>
               </TouchableOpacity>
             </View>
@@ -55,19 +136,24 @@ export default function EditarCardapio() {
               placeholderTextColor={'#d9d9d9'}
               cursorColor={'white'}
               keyboardType='default'
+              onChangeText={pesquisarPorProduto}
             />
 
             <View style={{height: '60%'}}>
               <FlatList
                 style={styles.lista}
                 showsVerticalScrollIndicator={false}
-                data={data}
-                renderItem={({item}) => <ItemEditarCardapio descricao={item.descricao} precoUni={item.precoUni} />}
+                data={produtosFiltrados}
+                renderItem={({item}) => <ItemEditarCardapio id={item.id} descricao={item.descricao} precoUni={item.preco} controleSelecao={produtosSelecionadosParaExclusao} />}
                 keyExtractor={item => Math.random()}
               />
             </View>
 
-            <TouchableOpacity style={styles.btnExc}>
+            <TouchableOpacity style={styles.btnExc}
+              onPress={() => {
+                excluindoProdutosSelecionados();
+              }}
+            >
               <Text style={[styles.txtBtn, {color: 'white'}]}>Excluir</Text>
             </TouchableOpacity>
           </View>
