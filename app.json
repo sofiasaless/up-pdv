@@ -4,11 +4,11 @@
     "slug": "up-pdv",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icone1.png",
+    "icon": "./assets/icone.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/iconeTranspararente.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -17,7 +17,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/iconeTranspararente.png",
         "backgroundColor": "#ffffff"
       }
     },
