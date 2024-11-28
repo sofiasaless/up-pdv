@@ -93,7 +93,7 @@ export default function Home() {
           <TouchableOpacity style={styles.btnNovaMesa}
             onPress={async () => {
               await db.criarNovaMesa().then(() => {
-                Alert.alert('Registro', 'Nova mesa adicionada com sucesso!');
+                Alert.alert('Mesas', 'Nova mesa adicionada com sucesso!');
                 recuperarMesas();
               });
               // console.log(mesas)

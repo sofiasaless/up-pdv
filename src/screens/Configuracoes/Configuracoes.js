@@ -26,7 +26,7 @@ export default function Configuracoes() {
             <Text style={styles.txt}>Mesas e cardápio</Text>
 
             <TouchableOpacity style={styles.btnConfig} onPress={() => navigator.navigate('EditarMesas')}>
-              <Text style={styles.txtConfig}>Editar/Excluir mesas</Text>
+              <Text style={styles.txtConfig}>Excluir mesas</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.btnConfig} onPress={() => navigator.navigate('EditarCardapio')}>

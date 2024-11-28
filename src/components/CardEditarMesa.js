@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 // imports
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
@@ -12,9 +12,22 @@ export default function CardEditarMesa( {id, reload} ) {
       <Text style={styles.txtMesa}>MESA {id}</Text>
       <TouchableOpacity
         onPress={() => {
-          // console.log('deletando mesa de id ', id)
-          db.removerMesa(id);
-          reload();
+          Alert.alert('Excluir mesa', 'Tem certeza que deseja excluir a mesa?', [
+            {
+              text: 'Cancelar',
+              onPress: () => {
+                console.log('exclusão cancelado')
+                return;
+              },
+              style: 'cancel',
+            },
+            {
+              text: 'Confirmar', onPress: async () => {
+                db.removerMesa(id);
+                reload();
+              }
+            },
+          ])
         }}
       >
         <FontAwesome6 name="trash-can" size={26} color="black" />
