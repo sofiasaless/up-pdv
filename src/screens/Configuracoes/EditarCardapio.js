@@ -184,11 +184,11 @@ const styles = StyleSheet.create({
   },
   txt: {
     color: 'white',
-    fontWeight: 'bold',
     fontSize: 20,
     textTransform: 'uppercase',
     width: '100%',
-    margin: 3
+    margin: 3,
+    fontFamily: 'Barlow-Bold'
   },
   novoProduto: {
     // backgroundColor: 'red',
@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
   txtBtn: {
     textAlign: 'center',
     fontSize: 18,
-    fontWeight: 'bold'
+    fontFamily: 'Barlow-Bold'
   },
   lista: {
     backgroundColor: '#247ba0',

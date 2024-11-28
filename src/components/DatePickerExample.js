@@ -55,8 +55,7 @@ const styles = StyleSheet.create({
   },
   title:{
     color: 'white',
-    padding: 5
-    // fontFamily: 'Poppins-Bold',
-    // fontSize: 11
+    padding: 5,
+    fontFamily: 'Barlow-Bold',
   }
 });

@@ -42,11 +42,13 @@ const styles = StyleSheet.create({
   txtDescricao: {
     color: 'white',
     fontSize: 18,
+    fontFamily: 'Barlow-Medium'
     // backgroundColor: 'green'
   },
   txtPreco: {
     color: 'white',
     fontSize: 18,
+    fontFamily: 'Barlow-Medium'
     // backgroundColor: 'red'
   }
 });

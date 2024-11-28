@@ -102,7 +102,8 @@ export default function VendasPorPeriodos() {
                   textAlign: 'center', 
                   textAlignVertical: 'center',
                   color: 'white',
-                  fontSize: 17
+                  fontSize: 17,
+                  fontFamily: 'Barlow-Medium'
                 }}
               >
                 até
@@ -153,10 +154,10 @@ export default function VendasPorPeriodos() {
 
             <View style={styles.viewTotal}>
               <Text 
-                style={{flex: 1, fontSize: 24, fontWeight: 'bold'}}
+                style={{flex: 1, fontSize: 24, fontFamily: 'Barlow-Medium'}}
               >Total</Text>
               <Text 
-                style={{fontSize: 24, fontWeight: 'bold'}} 
+                style={{fontSize: 24, fontFamily: 'Barlow-Medium'}} 
               >
                 {
                   (pedidos == null)?
@@ -211,7 +212,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: 'white',
     fontSize: 25,
-    fontWeight: 'bold',
+    fontFamily: 'Barlow-Bold'
   },
   viewInterna: {
     display: 'flex',
@@ -228,6 +229,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 15,
     padding: 5,
+    fontFamily: 'Barlow-Medium'
   },
   btnResetar: {
     backgroundColor: 'white',
@@ -237,6 +239,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 15,
     padding: 5,
+    fontFamily: 'Barlow-Medium'
   },
 
 
@@ -272,6 +275,6 @@ const styles = StyleSheet.create({
     fontSize: 17,
     textAlign: 'center',
     padding: 5,
-    fontWeight: 'bold'
+    fontFamily: 'Barlow-Bold'
   }
 });

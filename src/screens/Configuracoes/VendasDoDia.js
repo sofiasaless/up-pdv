@@ -56,10 +56,10 @@ export default function VendasDoDia() {
 
             <View style={styles.viewTotal}>
               <Text 
-                style={{flex: 1, fontSize: 24, fontWeight: 'bold'}}
+                style={{flex: 1, fontSize: 24, fontFamily: 'Barlow-Medium'}}
               >Total</Text>
               <Text 
-                style={{fontSize: 24, fontWeight: 'bold'}} 
+                style={{fontSize: 24, fontFamily: 'Barlow-Medium'}} 
               >
                 {
                   (pedidosDoDia === null)?
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: 'white',
     fontSize: 25,
-    fontWeight: 'bold',
+    fontFamily: 'Barlow-Bold',
     textTransform: 'uppercase'
   },
   listaDePedidos: {

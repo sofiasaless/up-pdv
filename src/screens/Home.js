@@ -3,6 +3,7 @@ import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'rea
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useCallback, useState } from 'react';
 
+import * as SplashScreen from 'expo-splash-screen';
 import * as SQLite from 'expo-sqlite';
 
 // componentes
@@ -13,6 +14,9 @@ import CardMesa from '../components/CardMesa';
 import Octicons from '@expo/vector-icons/Octicons';
 import useDatabaseConfig from '../database/useDatabaseConfig';
 import { Mesa } from '../model/Mesa';
+import { useFonts } from 'expo-font';
+
+SplashScreen.preventAutoHideAsync();
 
 export default function Home() {
   // instâncias
@@ -21,6 +25,14 @@ export default function Home() {
 
   // state para guardar as mesas
   const [mesas, setMesas] = useState([]);
+
+  // configurações para fonte
+  // configurações para pegar a fonte desejada
+  const [loaded, error] = useFonts({
+    'Barlow-Bold': require('../../assets/fonts/Barlow-Bold.ttf'),
+    'Barlow-Regular': require('../../assets/fonts/Barlow-Regular.ttf'),
+    'Barlow-Medium': require('../../assets/fonts/Barlow-Medium.ttf'),
+  });
 
   const recuperarMesas = async () => {
     const database = await SQLite.openDatabaseAsync(db.databaseOnUse, {
@@ -50,17 +62,23 @@ export default function Home() {
 
   useFocusEffect(
     useCallback(() => {
+      if (loaded || error) {
+        SplashScreen.hideAsync();
+      }
       recuperarMesas();
-    },[])
+    },[loaded, error])
   );
+  if (!loaded && !error) {
+    return null;
+  }
   
   return (
     <View style={styles.container}>
       <View style={styles.containerIntroducao}>
         <View style={styles.containerTextoOpcao}>
           <View>
-            <Text style={{color: 'white', fontSize: 30, fontWeight: 'bold'}}>Up! PDV</Text>
-            <Text style={{color: 'white', fontSize: 17}}>Bem-vindo ao seu sistema de vendas!</Text>
+            <Text style={{color: 'white', fontSize: 30, fontFamily: 'Barlow-Bold'}}>Up! PDV</Text>
+            <Text style={{color: 'white', fontSize: 17, fontFamily: 'Barlow-Regular'}}>Bem-vindo ao seu sistema de vendas!</Text>
           </View>
           <TouchableOpacity
             onPress={() => {
@@ -81,7 +99,7 @@ export default function Home() {
               // console.log(mesas)
             }}
           >
-            <Text style={{textAlign: 'center', fontSize: 20, color: 'white', alignItems: 'center'}}>+ Nova mesa</Text>
+            <Text style={{textAlign: 'center', fontSize: 20, color: 'white', alignItems: 'center', fontFamily: 'Barlow-Bold'}}>+ Nova mesa</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -155,11 +173,14 @@ const styles = StyleSheet.create({
     width: '90%',
     // backgroundColor: 'green',
     paddingVertical: 15,
-    borderBottomWidth: 1,
+    borderBottomWidth: 3,
+    borderRadius: 5
   },
   txtMesa: {
     fontSize: 50,
-    textAlign: 'center'
+    textAlign: 'center',
+    fontFamily: 'Barlow-Medium',
+    textTransform: 'uppercase'
   },
   contentMesas: {
     // backgroundColor: 'yellow',

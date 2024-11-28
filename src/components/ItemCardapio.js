@@ -77,12 +77,13 @@ const styles = StyleSheet.create({
   txtDescricao: {
     color: 'white',
     fontSize: 18,
+    fontFamily: 'Barlow-Medium'
     // backgroundColor: 'green'
   },
   txtPreco: {
     color: 'white',
     fontSize: 18,
-    fontWeight: 'bold'
+    fontFamily: 'Barlow-Bold'    
     // backgroundColor: 'red'
   },
   qtdControle: {
@@ -104,7 +105,8 @@ const styles = StyleSheet.create({
   txtPlus: {
     color: 'white',
     fontSize: 15,
-    textAlign: 'center'
+    textAlign: 'center',
+    fontFamily: 'Barlow-Medium'
   },
   viewQntd: {
     backgroundColor: '#1d3461',
