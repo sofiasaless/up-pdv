@@ -15,11 +15,13 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import useDatabaseConfig from '../database/useDatabaseConfig';
 import { Pedido } from '../model/Pedido';
+import useConvertors from '../util/useConvertors';
 
 export default function ResumoConta( { route } ) {
   // instâncias
   const navigator = useNavigation();
   const db = useDatabaseConfig();
+  const util = useConvertors();
 
   // parametros da rota
   const id = route.params.idMesa;
@@ -30,13 +32,36 @@ export default function ResumoConta( { route } ) {
   const [quantidade, setQuantidade] = useState(1);
   const [pedidos, setPedidos] = useState([])
 
+  // assegurandor para preencher campos
+  const handlePreencherCampos = () => {
+    return (descricao === '' || preco === 0 || preco === '')
+  }
+
+  const limparCampos = () => {
+    setDescricao('')
+    setPreco(0)
+    setQuantidade(1)
+  }
+
   const adicionarNoPedidoForaCardapio = () => {
+    // testando se é isNaN
+    if (isNaN(util.formatadorNumerico(preco)) || isNaN(util.formatadorNumerico(quantidade))) {
+      Alert.alert('Não foi possível adicionar produto ao pedido!', 'O valor adicionado não é um número válido!', 
+        [
+          {
+            text: 'OK'
+          }
+        ])
+      return;
+    }
+
     // tem que abrir a mesa primeiro
-    db.abrirMesa(id);
+    db.abrirMesa(id)
+    let qtd = util.formatadorNumerico(quantidade)
 
     let arrayPedidos = []
     arrayPedidos = pedidos
-    arrayPedidos.push(new Pedido(Math.random(), descricao, Number(preco), (Number(quantidade) === 0)? 1:Number(quantidade)))
+    arrayPedidos.push(new Pedido(Math.random(), descricao, util.formatadorNumerico(preco), (qtd === 0)?1:qtd))
     setPedidos(arrayPedidos);
 
     // salvando os pedidos da mesa no bando de dados
@@ -46,12 +71,18 @@ export default function ResumoConta( { route } ) {
       console.log('erro ao atualizar mesa: ', error);
     } finally {
       recuperarDadosDaMesa();
+      limparCampos();
     }
   }
 
   // selecionando itens do pedido para manipulação
   const [itensSelecionados, setItensSelecionados] = useState([])
   const [itensSelecionadosTransferencia, setItensSelecionadosTransferencia] = useState([])
+
+  // assegurandor para preencher campos
+  const handleCheckBox = () => {
+    return (itensSelecionados.length === 0)
+  }
   
   // apagando itens do pedido
   const selecionadosPorCheck = (id, pedido, action) => {
@@ -95,6 +126,8 @@ export default function ResumoConta( { route } ) {
       console.log('erro ao atualizar mesa com itens deletados ', error);
     } finally {
       recuperarDadosDaMesa();
+      setItensSelecionados([])
+      setItensSelecionadosTransferencia([])
     }
   }
 
@@ -158,6 +191,7 @@ export default function ResumoConta( { route } ) {
               cursorColor={'white'}
               keyboardType='default'
               onChangeText={setDescricao}
+              value={descricao}
             />
             <View style={styles.formViewInterna}>
               <TextInput
@@ -167,6 +201,7 @@ export default function ResumoConta( { route } ) {
                 cursorColor={'white'}
                 keyboardType='numeric'
                 onChangeText={setPreco}
+                value={preco}
               />
               <TextInput
                 style={styles.inputInterno} 
@@ -179,7 +214,18 @@ export default function ResumoConta( { route } ) {
               />
               <TouchableOpacity
                 style={styles.btnAdicionar}
-                onPress={adicionarNoPedidoForaCardapio}
+                onPress={() => {
+                  handlePreencherCampos()?
+                  Alert.alert('Não foi possível adicionar produto ao pedido!', 'Preencha a descrição e o valor para adicionar na comanda!', 
+                  [
+                    {
+                      text: 'OK'
+                    }
+                  ])
+                  :
+                  // console.log('valido pra prosseguir')
+                  adicionarNoPedidoForaCardapio();
+                }}
               >
                 <Text style={{textAlign: 'center', color: 'white', fontFamily: 'Barlow-Bold', fontSize: 18}}>Adicionar</Text>
               </TouchableOpacity>
@@ -215,12 +261,39 @@ export default function ResumoConta( { route } ) {
               <View style={styles.btnDeConta}>
                 <TouchableOpacity style={[styles.btnEncerrar, {backgroundColor: '#1d3461'}]}
                   onPress={async () => {
-                    await db.criarHistorico(id, JSON.stringify(pedidos), new Date().toLocaleDateString())
-                    // await db.criarHistorico(id, JSON.stringify(pedidos), '23/11/2024')
-                    await db.fecharMesa(id).then(() => {
-                      Alert.alert('Encerramento', 'Conta da mesa encerrada com sucesso!');
-                      navigator.goBack();
-                    });
+                    (pedidos.length === 0)
+                    ?
+                    Alert.alert('Mesa vazia', 'Nenhum pedido na mesa, voltando para as mesas!', 
+                    [
+                      {
+                        text: 'OK',
+                        onPress: () => {
+                          navigator.goBack();
+                        }
+                      }
+                    ])
+                    :
+                    Alert.alert('Encerrar a conta', 'Tem certeza que deseja encerrar a conta da mesa? As informações não poderão ser recuperadas e estarão visíveis apenas no histórico.', [
+                      {
+                        text: 'Cancelar',
+                        onPress: () => {
+                          console.log('encerramento cancelado')
+                          return;
+                        },
+                        style: 'cancel',
+                      },
+                      {
+                        text: 'Confirmar', onPress: async () => {
+                          await db.criarHistorico(id, JSON.stringify(pedidos), new Date().toLocaleDateString())
+                          // await db.criarHistorico(id, JSON.stringify(pedidos), '23/11/2024')
+                          await db.fecharMesa(id).then(() => {
+                            Alert.alert('Encerramento', 'Conta da mesa encerrada com sucesso!');
+                            navigator.goBack();
+                          });
+                        }
+                      },
+                    ])
+                    
                   }}
                 >
                   <FontAwesome5 style={[styles.iconBtn]} name="money-bill-alt" size={20} color="white" />
@@ -230,6 +303,15 @@ export default function ResumoConta( { route } ) {
                 <View style={styles.btnView}>
                   <TouchableOpacity style={[styles.btnMenor, {backgroundColor: '#3bb273'}]}
                     onPress={() => {
+                      handleCheckBox()
+                      ?
+                      Alert.alert('Não foi possível realizar a transferência!', 'Selecione pelo menos um item do pedido para fazer a transferência!', 
+                      [
+                        {
+                          text: 'OK'
+                        }
+                      ])
+                      :
                       navigator.navigate('AreaTransferencia', {
                         pedidos: itensSelecionadosTransferencia,
                         mesaOrigem: id
@@ -241,7 +323,18 @@ export default function ResumoConta( { route } ) {
                   </TouchableOpacity>
 
                   <TouchableOpacity style={[styles.btnMenor, {backgroundColor: '#e15554'}]}
-                    onPress={excluirItensDoPedido}
+                    onPress={() => {
+                      handleCheckBox()
+                      ?
+                      Alert.alert('Não foi possível realizar a exclusão!', 'Selecione pelo menos um item do pedido para fazer exclusão!', 
+                      [
+                        {
+                          text: 'OK'
+                        }
+                      ])
+                      :
+                      excluirItensDoPedido();
+                    }}
                   >
                     <Ionicons style={styles.iconBtn} name="trash-outline" size={20} color="white" />
                     <Text style={styles.txtBtn}>Excluir</Text>

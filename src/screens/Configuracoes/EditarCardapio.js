@@ -1,6 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { FlatList, KeyboardAvoidingView, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { DATA } from '../data';
+import { Alert, FlatList, KeyboardAvoidingView, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { useEffect, useState } from 'react';
 
@@ -12,15 +11,52 @@ import ItemEditarCardapio from '../../components/ItemEditarCardapio';
 import * as SQLite from 'expo-sqlite';
 import useDatabaseConfig from '../../database/useDatabaseConfig';
 import { Pedido } from '../../model/Pedido';
+import useConvertors from '../../util/useConvertors';
 
 export default function EditarCardapio() {
-  const data = DATA;
 
-  const database = useDatabaseConfig();;
+  // instância
+  const database = useDatabaseConfig();
+  const util = useConvertors();
 
   // states para adição
   const [descricao, setDescricao] = useState('')
   const [preco, setPreco] = useState(0)
+
+  // assegurandor para preencher campos
+  const handlePreencherCampos = () => {
+    return (descricao === '' || preco === 0 || preco === '')
+  }
+
+  const limparCampos = () => {
+    setDescricao('')
+    setPreco(0)
+  }
+
+  const adicionarValidoNoCardapio = async () => {
+    // testando se é isNaN
+    if (isNaN(util.formatadorNumerico(preco)) || util.formatadorNumerico(preco) === 0) {
+      Alert.alert('Não foi possível adicionar produto ao cardápio!', 'O preço adicionado não é um número válido!', 
+      [
+        {
+          text: 'OK'
+        }
+      ])
+      return;
+    }
+
+    await database.adicionarNoCardapio(descricao, util.formatadorNumerico(preco));
+    recuperarProdutos();
+    Alert.alert('Sucesso!', 'Produto registrado no cardápio com sucesso!', 
+    [
+      {
+        text: 'OK',
+        onPress: () => {
+          limparCampos();
+        }
+      }
+    ])
+  }
 
   // states para controle
   const [produtos, setProdutos] = useState([])
@@ -104,6 +140,7 @@ export default function EditarCardapio() {
               cursorColor={'white'}
               keyboardType='default'
               onChangeText={setDescricao}
+              value={descricao}
             />
 
             <View style={{display: 'flex', flexDirection: 'row', gap: 5}}>
@@ -112,14 +149,23 @@ export default function EditarCardapio() {
                 placeholder='Preço'
                 placeholderTextColor={'#d9d9d9'}
                 cursorColor={'white'}
-                keyboardType='default'
+                keyboardType='numeric'
                 onChangeText={setPreco}
+                value={preco}
               />
 
               <TouchableOpacity style={styles.btnAdc}
                 onPress={async () => {
-                  await database.adicionarNoCardapio(descricao, Number(preco));
-                  recuperarProdutos();
+                  handlePreencherCampos()
+                  ?
+                  Alert.alert('Não foi possível adicionar produto ao pedido!', 'Preencha a descrição e o valor para adicionar o produto no cardápio!', 
+                  [
+                    {
+                      text: 'OK'
+                    }
+                  ])
+                  :
+                  adicionarValidoNoCardapio();
                 }}
               >
                 <Text style={styles.txtBtn}>Adicionar</Text>

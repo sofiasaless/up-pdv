@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "up-pdv",
+    "name": "Up! PDV",
     "slug": "up-pdv",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icone1.png",
+    "icon": "./assets/icone.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/iconeTranspararente.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -17,9 +17,10 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/iconeTranspararente.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.sofiasaless.uppdv"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -30,9 +31,16 @@
       [
         "expo-font",
         {
-          "fonts": ["assets/fonts/SourceCodePro-Regular.tff"]
+          "fonts": [
+            "assets/fonts/SourceCodePro-Regular.tff"
+          ]
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "7a1edb08-b4cc-4709-a40e-4902662952f4"
+      }
+    }
   }
 }
