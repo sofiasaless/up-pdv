@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import * as SQLite from 'expo-sqlite';
 
@@ -19,6 +19,12 @@ export default function EditarMesas() {
 
   // state para guardar as mesas
   const [mesas, setMesas] = useState([]);
+
+  const adicionarNovaMesa = async () => {
+    await db.criarNovaMesa();
+    Alert.alert('Mesas', 'Nova mesa adicionada com sucesso!');
+    recuperarMesas();
+  }
 
   const recuperarMesas = async () => {
     const database = await SQLite.openDatabaseAsync(db.databaseOnUse, {
@@ -58,6 +64,17 @@ export default function EditarMesas() {
       style={styles.container}
     >
       <View style={styles.container}>
+        <View style={styles.viewBtn}>
+          <View style={styles.containerNovaMesa}>
+            <TouchableOpacity style={styles.btnNovaMesa}
+              onPress={async () => {
+                adicionarNovaMesa();
+              }}
+            >
+              <Text style={{textAlign: 'center', fontSize: 20, color: 'white', alignItems: 'center', fontFamily: 'Barlow-Bold'}}>+ Nova mesa</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
 
         <View style={styles.content}>            
           <ScrollView style={styles.contentMesas}
@@ -92,10 +109,25 @@ const styles = StyleSheet.create({
   content: {
     backgroundColor: '#1d3461',
     width: '100%',
-    height: '95%',
+    height: '83%',
     borderRadius: 15,
     display: 'flex',
     alignItems: 'center'
+  },
+  viewBtn: {
+    width: '100%'
+  },
+  containerNovaMesa: {
+    display: 'flex',
+    alignItems: 'center',
+    paddingVertical: 18,
+  },
+  btnNovaMesa: {
+    backgroundColor: '#247ba0',
+    padding: 10,
+    width: '60%',
+    borderRadius: 15,
+    display: 'flex',
   },
   contentMesas: {
     // backgroundColor: 'yellow',

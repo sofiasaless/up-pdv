@@ -8,7 +8,8 @@ export default function ItemPedido({ quantidade, descricao, precoUni, total }) {
         <Text 
           style={{
             marginHorizontal: 15,
-            fontFamily: 'Barlow-Bold'
+            fontFamily: 'Barlow-Bold',
+            fontSize: 15
           }}
         >
           {quantidade}
@@ -18,7 +19,8 @@ export default function ItemPedido({ quantidade, descricao, precoUni, total }) {
             {
               width: '50%',
               textAlign: 'left',
-              fontFamily: 'Barlow-Medium'
+              fontFamily: 'Barlow-Medium',
+              fontSize: 15
               // backgroundColor: 'blue'
             }
           }
@@ -31,7 +33,8 @@ export default function ItemPedido({ quantidade, descricao, precoUni, total }) {
               flex: 0.5,
               textAlign: 'left',
               color: '#737373',
-              fontFamily: 'Barlow-Medium'
+              fontFamily: 'Barlow-Medium',
+              fontSize: 15
               // backgroundColor: 'green'
             }
           }
@@ -43,7 +46,8 @@ export default function ItemPedido({ quantidade, descricao, precoUni, total }) {
             {
               flex: 0.5,
               textAlign: 'center', 
-              fontFamily: 'Barlow-Medium'
+              fontFamily: 'Barlow-Medium',
+              fontSize: 15
               // backgroundColor: 'red'
             }
           }
@@ -61,7 +65,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 8,
+    padding: 10,
   },
   checkbox: {
     marginLeft: 7,

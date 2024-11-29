@@ -399,7 +399,7 @@ const styles = StyleSheet.create({
   inputProduto: {
     backgroundColor: '#247ba0',
     borderRadius: 5,
-    padding: 10,
+    padding: 15,
     color: 'white',
     fontFamily: 'Barlow-Medium'
   },
@@ -414,17 +414,20 @@ const styles = StyleSheet.create({
     width: 'auto',
     backgroundColor: '#247ba0',
     borderRadius: 5,
-    padding: 10,
     color: 'white',
     flex: 1,
-    fontFamily: 'Barlow-Medium'
+    fontFamily: 'Barlow-Medium',
+    padding: 15,
   },
   btnAdicionar: {
     width: 'auto',
     backgroundColor: '#1d3461',
     borderRadius: 5,
     padding: 8,
-    flex: 1
+    flex: 1,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   btnSelecionarProduto: {
     backgroundColor: '#247ba0',
@@ -464,9 +467,11 @@ const styles = StyleSheet.create({
   },
   btnMenor: {
     flex: 1,
+    display: 'flex',
     padding: 10,
     borderRadius: 5,
     flexDirection: 'row',
-    justifyContent: 'space-evenly'
+    justifyContent: 'center',
+    gap: 10
   }
 });

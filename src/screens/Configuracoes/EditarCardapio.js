@@ -197,7 +197,21 @@ export default function EditarCardapio() {
 
             <TouchableOpacity style={styles.btnExc}
               onPress={() => {
-                excluindoProdutosSelecionados();
+                Alert.alert('Excluir produtos selecionados', 'Tem certeza que deseja esses proudtos? Eles não poderão ser recuperados.', [
+                  {
+                    text: 'Cancelar',
+                    onPress: () => {
+                      console.log('encerramento cancelado')
+                      return;
+                    },
+                    style: 'cancel',
+                  },
+                  {
+                    text: 'Confirmar', onPress: () => {
+                      excluindoProdutosSelecionados();
+                    }
+                  },
+                ])
               }}
             >
               <Text style={[styles.txtBtn, {color: 'white'}]}>Excluir</Text>

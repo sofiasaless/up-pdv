@@ -24,7 +24,7 @@ export default function useDatabaseConfig() {
         PRAGMA journal_mode = WAL;
         CREATE TABLE IF NOT EXISTS mesas 
         (
-          id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, 
+          id INTEGER PRIMARY KEY NOT NULL, 
           status TEXT NOT NULL,
           pedidos TEXT
         );
