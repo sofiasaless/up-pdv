@@ -80,7 +80,7 @@ export default function Home() {
       <View style={styles.containerIntroducao}>
         <View style={styles.containerTextoOpcao}>
           <View>
-            <Text style={{color: 'white', fontSize: 30, fontFamily: 'Barlow-Bold'}}>Up! PDV</Text>
+            <Text style={{color: 'white', fontSize: 40, fontFamily: 'Barlow-Bold'}}>Up! PDV</Text>
             <Text style={{color: 'white', fontSize: 17, fontFamily: 'Barlow-Regular'}}>Bem-vindo ao seu sistema de vendas!</Text>
           </View>
           <TouchableOpacity
@@ -92,7 +92,7 @@ export default function Home() {
           </TouchableOpacity>
         </View>
 
-        <View style={styles.containerNovaMesa}>
+        {/* <View style={styles.containerNovaMesa}>
           <TouchableOpacity style={styles.btnNovaMesa}
             onPress={async () => {
               await db.criarNovaMesa().then(() => {
@@ -104,7 +104,7 @@ export default function Home() {
           >
             <Text style={{textAlign: 'center', fontSize: 20, color: 'white', alignItems: 'center', fontFamily: 'Barlow-Bold'}}>+ Nova mesa</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
       </View>
       
 
@@ -143,7 +143,10 @@ const styles = StyleSheet.create({
     flex: 1
   },
   containerIntroducao: {
-    justifyContent: 'flex-start',
+    display: 'flex',
+    // justifyContent: 'flex-start',
+    alignContent: 'center',
+    marginBottom: '5%',
     // backgroundColor: 'red',
     width: '90%',
   },
@@ -167,7 +170,7 @@ const styles = StyleSheet.create({
   content: {
     backgroundColor: '#fff',
     width: '100%',
-    height: '70%',
+    height: '75%',
     borderRadius: 15,
     display: 'flex',
     alignItems: 'center'

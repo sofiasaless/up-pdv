@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 export default function RodapeUp( { cor } ) {
   return (
     <View style={styles.container}>
-      <Text style={[styles.texto, {color: (cor)?'#1d3461':'#fff'}]}>Um serviço @UpBusiness0</Text>
+      <Text style={[styles.texto, {color: (cor)?'#1d3461':'#fff'}]}>Um serviço ©UpBusiness</Text>
       <StatusBar style="auto" />
     </View>
   );
